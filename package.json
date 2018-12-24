@@ -1,0 +1,26 @@
+{
+  "name": "dappproject1",
+  "version": "1.0.0",
+  "description": "Setup &amp; Token",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlecSchaefer/DAppProject1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlecSchaefer/DAppProject1/issues"
+  },
+  "homepage": "https://github.com/AlecSchaefer/DAppProject1#readme",
+  "dependencies": {
+    "ganache-cli": "^6.2.5",
+    "truffle": "^5.0.0"
+  }
+}
