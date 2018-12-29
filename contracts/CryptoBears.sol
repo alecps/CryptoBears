@@ -6,7 +6,8 @@ import "./BearBucks.sol";
 contract CryptoBears is ERC721 {
 
   event bearFed(
-    uint256 bearID
+    uint256 bearID,
+    uint newTimeLastFed
   );
 
   event betPlaced(
@@ -49,6 +50,15 @@ contract CryptoBears is ERC721 {
     _;
   }
 
+  modifier notHungry(uint256 bearID) {
+    require(getMealsNeeded(bearID) == 0, "Your bear is hungry!");
+    _;
+  }
+
+  function getBearBucksContract() external view returns(address) {
+    return _BearBucksContract;
+  }
+
   function newBear(uint256 genes, address owner, string name) returns(uint) {
 
     Bear memory bear = Bear({
@@ -60,7 +70,7 @@ contract CryptoBears is ERC721 {
 
     uint256 bearID = _bears.push(bear) - 1;
     _mint(owner, bearID);
-    _BearBucksContract.mint(owner, startBalance);
+    _BearBucksContract.mint(owner, _startBalance);
     return bearID;
   }
 
@@ -79,20 +89,20 @@ contract CryptoBears is ERC721 {
     _BearBucksContract.burn(msg.sender, mealsFed.mul(_feedingCost));
     Bear storage bear = _bears[bearID];
     bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
-    emit bearFed(bearID);
+    emit bearFed(bearID, bear.timeLastFed);
     /*End Solution*/
   }
 
   function getMealsNeeded(uint256 bearID)
     exists(bearID) view returns(uint)
   {
-    Bear bear = _bears[bearID];
+    Bear memory bear = _bears[bearID];
     uint timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
   }
 
   function placeBet(uint256 bearID, uint256 opponentID, uint256 amount)
-    exists(bearID) exists(opponentID)
+    exists(bearID) exists(opponentID) notHungry(bearID)
   {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
@@ -107,7 +117,7 @@ contract CryptoBears is ERC721 {
   }
 
   function removeBet(uint256 bearID, uint256 opponentID)
-    exists(bearID) exists(opponentID)
+    exists(bearID) exists(opponentID) notHungry(bearID)
   {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
