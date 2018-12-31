@@ -28,7 +28,9 @@ contract CryptoBears is ERC721 {
     string name;
   }
 
-  Bear[] _bears;
+  string public constant contractName = 'CryptoBears';
+
+  Bear[] public _bears;
 
   mapping(uint256 => mapping(uint256 => uint256)) _bets;
 
@@ -38,7 +40,11 @@ contract CryptoBears is ERC721 {
 
   BearBucks _BearBucksContract;
 
-  constructor(uint startBalance, uint feedingCost, uint feedingInterval) {
+  constructor(
+    uint startBalance,
+    uint feedingCost,
+    uint feedingInterval
+  ) {
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
     _feedingCost = feedingCost;
@@ -128,6 +134,10 @@ contract CryptoBears is ERC721 {
 
     emit betRemoved(bearID, opponentID);
     /*End Solution*/
+  }
+
+  function getBet(uint256 bearID, uint256 opponentID) view returns(uint256) {
+    return _bets[bearID][opponentID];
   }
 
   function payWinner(uint256 winner, uint256 loser)
