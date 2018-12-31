@@ -206,9 +206,24 @@ async function checkBalancesSumToTotalSupply(token, accounts, name) {
     'total supply does not equal sum of balances for ' + name)
 }
 
+async function expectRevert(contractPromise) {
+    try {
+        await contractPromise;
+    } catch (error) {
+        assert(
+            error.message.search('revert') >= 0,
+            'Expected error of type revert, got \'' + error + '\' instead',
+        );
+        return;
+    }
+    assert.fail('Expected error of type revert, but no error was received');
+}
+
 
 module.exports = {
   CryptoBears: CryptoBears,
   BearBucks: BearBucks,
   checkState: checkState,
+  expectRevert: expectRevert,
+  
 }
