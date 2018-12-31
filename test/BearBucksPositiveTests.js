@@ -1,10 +1,10 @@
-var utils = require('./Utils')
+const utils = require('./Utils')
 
-var CryptoBears = utils.CryptoBears
-var BearBucks = utils.BearBucks
-var checkState = utils.checkState
+const CryptoBears = utils.CryptoBears
+const BearBucks = utils.BearBucks
+const checkState = utils.checkState
 
-var amount = 100;
+const amount = 100;
 
 contract('BearBucksPositiveTests', async function (accounts) {
 
