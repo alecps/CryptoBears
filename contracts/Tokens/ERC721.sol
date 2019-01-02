@@ -43,7 +43,6 @@ contract ERC721 is ERC165, IERC721 {
    */
   function ownerOf(uint256 tokenId) public view returns (address) {
     address owner = _tokenOwner[tokenId];
-    require(owner != address(0));
     return owner;
   }
 
@@ -71,7 +70,6 @@ contract ERC721 is ERC165, IERC721 {
    * @return address currently approved for the given token ID
    */
   function getApproved(uint256 tokenId) public view returns (address) {
-    require(_exists(tokenId));
     return _tokenApprovals[tokenId];
   }
 
