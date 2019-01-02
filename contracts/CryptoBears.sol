@@ -30,7 +30,7 @@ contract CryptoBears is ERC721 {
 
   string public constant contractName = 'CryptoBears';
 
-  Bear[] public _bears;
+  Bear[] _bears;
 
   mapping(uint256 => mapping(uint256 => uint256)) _bets;
 
@@ -38,17 +38,20 @@ contract CryptoBears is ERC721 {
   uint _feedingCost;
   uint _feedingInterval;
 
-  BearBucks _BearBucksContract;
+  BearBucks public _BearBucksContract;
+  address public _CryptoBearMinter;
 
   constructor(
     uint startBalance,
     uint feedingCost,
-    uint feedingInterval
+    uint feedingInterval,
+    address CryptoBearMinter
   ) {
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
     _feedingCost = feedingCost;
     _feedingInterval = feedingInterval;
+    _CryptoBearMinter = CryptoBearMinter;
   }
 
   modifier exists(uint256 bearID) {
@@ -61,11 +64,14 @@ contract CryptoBears is ERC721 {
     _;
   }
 
-  function getBearBucksContract() external view returns(address) {
-    return _BearBucksContract;
+  modifier onlyCryptoBearMinter() {
+    require(msg.sender == _CryptoBearMinter, "msg.sender is not CryptoBearMinter");
+    _;
   }
 
-  function newBear(uint256 genes, address owner, string name) returns(uint) {
+  function newBear(uint256 genes, address owner, string name)
+    onlyCryptoBearMinter returns(uint256)
+  {
 
     Bear memory bear = Bear({
       timeOfBirth: now,
@@ -97,6 +103,10 @@ contract CryptoBears is ERC721 {
     bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
     emit bearFed(bearID, bear.timeLastFed);
     /*End Solution*/
+  }
+
+  function getNumBears() view returns(uint256) {
+    return _bears.length;
   }
 
   function getMealsNeeded(uint256 bearID)

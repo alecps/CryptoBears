@@ -10,6 +10,7 @@ const mapValuesDeep = (v, callback) => (
     ? _.mapValues(v, v => mapValuesDeep(v, callback))
     : callback(v)
 )
+const zero = "0x0000000000000000000000000000000000000000"
 
 async function checkState(_tokens, _stateChanges, _accounts) {
   var numTokens = _tokens.length
@@ -45,8 +46,8 @@ async function expectedState(token, stateChanges, accounts, name) {
     case 'CryptoBears':
     var state = {
       'balanceOf': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
-      'ownerOf': {'b0': '0x0', 'b1': '0x0', 'b2': '0x0', 'b3': '0x0', 'b4': '0x0'},
-      'getApproved': {'b0': '0x0', 'b1': '0x0', 'b2': '0x0', 'b3': '0x0', 'b4': '0x0'},
+      'ownerOf': {'b0': zero, 'b1': zero, 'b2': zero, 'b3': zero, 'b4': zero},
+      'getApproved': {'b0': zero, 'b1': zero, 'b2': zero, 'b3': zero, 'b4': zero},
       'isApprovedForAll': {
         'a0': {'a1': false, 'a2': false, 'a3': false, 'a4': false},
         'a1': {'a0': false, 'a2': false, 'a3': false, 'a4': false},
@@ -197,7 +198,7 @@ async function checkBalancesSumToTotalSupply(token, accounts, name) {
     var totalSupply = (await token.totalSupply.call()).toNumber()
     break
     case 'CryptoBears':
-    var totalSupply = (await token._bears.call()).toNumber()
+    var totalSupply = (await token.getNumBears.call()).toNumber()
     break
     default:
     throw new Error('Contract name not recognized ' + name)
@@ -225,5 +226,6 @@ module.exports = {
   BearBucks: BearBucks,
   checkState: checkState,
   expectRevert: expectRevert,
-  
+  zero: zero,
+
 }
