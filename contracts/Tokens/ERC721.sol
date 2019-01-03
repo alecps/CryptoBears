@@ -172,11 +172,9 @@ contract ERC721 is ERC165, IERC721 {
    * @param tokenId uint256 ID of the token being burned by the msg.sender
    */
   function _burn(address owner, uint256 tokenId) internal {
-    /*Begin Solution*/
     _clearApproval(owner, tokenId);
     _removeTokenFrom(owner, tokenId);
     emit Transfer(owner, address(0), tokenId);
-    /*End Solution*/
   }
 
   /*Begin Solution*/

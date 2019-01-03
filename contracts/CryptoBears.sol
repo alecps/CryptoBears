@@ -21,6 +21,11 @@ contract CryptoBears is ERC721 {
     uint256 opponent
   );
 
+  event betSettled(
+    uint256 winner,
+    uint256 loser
+  );
+
   struct Bear {
     uint timeOfBirth;
     uint genes;
@@ -39,19 +44,19 @@ contract CryptoBears is ERC721 {
   uint _feedingInterval;
 
   BearBucks public _BearBucksContract;
-  address public _CryptoBearMinter;
+  address public _manager;
 
   constructor(
     uint startBalance,
     uint feedingCost,
     uint feedingInterval,
-    address CryptoBearMinter
+    address manager
   ) {
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
     _feedingCost = feedingCost;
     _feedingInterval = feedingInterval;
-    _CryptoBearMinter = CryptoBearMinter;
+    _manager = manager;
   }
 
   modifier exists(uint256 bearID) {
@@ -64,13 +69,13 @@ contract CryptoBears is ERC721 {
     _;
   }
 
-  modifier onlyCryptoBearMinter() {
-    require(msg.sender == _CryptoBearMinter, "msg.sender is not CryptoBearMinter");
+  modifier onlyManager() {
+    require(msg.sender == _manager, "msg.sender is not manager");
     _;
   }
 
   function newBear(uint256 genes, address owner, string name)
-    onlyCryptoBearMinter returns(uint256)
+    onlyManager returns(uint256)
   {
 
     Bear memory bear = Bear({
@@ -93,15 +98,16 @@ contract CryptoBears is ERC721 {
 
     uint mealsNeeded = getMealsNeeded(bearID);
     require(mealsNeeded > 0);
-
-    uint mealsFed = amount.div(_feedingCost);
-    if (mealsFed > mealsNeeded) {
-      mealsFed = mealsNeeded;
+    if (mealsNeeded > 0) {
+      uint mealsFed = amount.div(_feedingCost);
+      if (mealsFed > mealsNeeded) {
+        mealsFed = mealsNeeded;
+      }
+      _BearBucksContract.burn(msg.sender, mealsFed.mul(_feedingCost));
+      Bear storage bear = _bears[bearID];
+      bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
+      emit bearFed(bearID, bear.timeLastFed);
     }
-    _BearBucksContract.burn(msg.sender, mealsFed.mul(_feedingCost));
-    Bear storage bear = _bears[bearID];
-    bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
-    emit bearFed(bearID, bear.timeLastFed);
     /*End Solution*/
   }
 
@@ -115,6 +121,16 @@ contract CryptoBears is ERC721 {
     Bear memory bear = _bears[bearID];
     uint timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
+  }
+
+  function getTimeLastFed(uint256 bearID)
+    external exists(bearID) view returns(uint) {
+      return _bears[bearID].timeLastFed;
+  }
+
+  function getTimeOfBirth(uint256 bearID)
+    external exists(bearID) view returns(uint) {
+      return _bears[bearID].timeOfBirth;
   }
 
   function placeBet(uint256 bearID, uint256 opponentID, uint256 amount)
@@ -132,14 +148,17 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
+  /*WARNING: I think there might be a bug / vulnerability with feeding while bets are active*/
+
+  // Should this have a notHungry modifier??
   function removeBet(uint256 bearID, uint256 opponentID)
-    exists(bearID) exists(opponentID) notHungry(bearID)
+    exists(bearID) exists(opponentID)
   {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
     require(_bets[bearID][opponentID] > 0);
 
-    _BearBucksContract.removeBet(ownerOf(bearID), _bets[bearID][opponentID]);
+    _BearBucksContract.removeBet(msg.sender, _bets[bearID][opponentID]);
     _bets[bearID][opponentID] = 0;
 
     emit betRemoved(bearID, opponentID);
@@ -150,8 +169,9 @@ contract CryptoBears is ERC721 {
     return _bets[bearID][opponentID];
   }
 
+  /*NOTE: Race condition vulnerability. Remove bet when this transaction is posted */
   function payWinner(uint256 winner, uint256 loser)
-    exists(winner) exists(loser) external
+    exists(winner) exists(loser) onlyManager
   {
     /*Begin Solution*/
     require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
@@ -159,9 +179,16 @@ contract CryptoBears is ERC721 {
     _BearBucksContract.transferFrom(
       ownerOf(loser), ownerOf(winner), _bets[loser][winner]
     );
-    removeBet(winner, loser);
-    removeBet(loser, winner);
+    _BearBucksContract.removeBet(ownerOf(winner), _bets[winner][loser]);
+    _bets[winner][loser] = 0;
+    _BearBucksContract.removeBet(ownerOf(loser), _bets[loser][winner]);
+    _bets[loser][winner] = 0;
+    emit betSettled(winner, loser);
     /*End Solution*/
   }
+
+  //TODO: write tests
+  //TODO: segment tests
+  //TODO: deal with vulnerabilities, check for doubles and more
 
 }
