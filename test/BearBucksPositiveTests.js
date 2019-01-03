@@ -38,7 +38,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
   })
 
   it('should mint, increasing totalSupply and recipient balance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
 
     var stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
@@ -48,14 +48,14 @@ contract('BearBucksPositiveTests', async function (accounts) {
   })
 
   it('should burn, decreasing totalSupply and recipient balance', async function () {
-    await bearBucks.mint(accounts[1], amount)
-    await bearBucks.burn(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
+    await bearBucks.burn(accounts[1], amount, {from: accounts[0]})
 
     await checkState([bearBucks], [[]], accounts)
   })
 
   it('should transfer, decreasing sender balance and increasing recipient balance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.transfer(accounts[2], amount, {from: accounts[1]})
 
     var stateChanges = [
@@ -66,7 +66,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
   })
 
   it('should approve, increasing spender allowance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[2], amount, {from: accounts[1]})
 
     var stateChanges = [
@@ -78,7 +78,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
   })
 
   it('should transferFrom, reducing spender allowance and transfering from sender to recipient', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[2], amount, {from: accounts[1]})
     await bearBucks.transferFrom(accounts[1], accounts[3], amount, {from: accounts[2]})
 
@@ -91,7 +91,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
 
   /* NOTE: This test gives away part of the solution. Have students fill in? */
   it('should placeBet in BearBucks contract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount, {from: accounts[1]})
     await bearBucks.placeBet(accounts[1], amount, {from: accounts[0]})
 
@@ -106,7 +106,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
 
   /* NOTE: This test gives away part of the solution. Have students fill in? */
   it('should removeBet in BearBucks contract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount, {from: accounts[1]})
     await bearBucks.placeBet(accounts[1], amount, {from: accounts[0]})
     await bearBucks.removeBet(accounts[1], amount, {from: accounts[0]})

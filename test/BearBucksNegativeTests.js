@@ -19,7 +19,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to approve to address(0)', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await expectRevert(bearBucks.approve('0x0', amount, {from: accounts[1]}))
 
     var stateChanges = [
@@ -30,7 +30,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to transferFrom more than spender allowance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[2], amount-1, {from: accounts[1]})
     await expectRevert(
       bearBucks.transferFrom(accounts[1], accounts[3], amount, {from: accounts[2]})
@@ -46,7 +46,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
 
   //NOTE: could there be a betting vulnerability with this? no check on approve
   it('should fail to transferFrom more than owner balance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[2], amount+1, {from: accounts[1]})
     await expectRevert(
       bearBucks.transferFrom(accounts[1], accounts[3], amount+1, {from: accounts[2]})
@@ -61,7 +61,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to transferFrom to address(0)', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[2], amount, {from: accounts[1]})
     await expectRevert(
       bearBucks.transferFrom(accounts[1], '0x0', amount, {from: accounts[2]})
@@ -82,7 +82,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to transfer to address(0)', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await expectRevert(bearBucks.transfer('0x0', amount), {from: accounts[1]})
 
     var stateChanges = [
@@ -113,7 +113,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to burn if not CryptoBearsContract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await expectRevert(bearBucks.burn(accounts[1], amount, {from: accounts[2]}))
 
     var stateChanges = [
@@ -124,7 +124,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to placeBet if not CryptoBearsContract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount, {from: accounts[1]})
     await expectRevert(bearBucks.placeBet(accounts[1], amount, {from: accounts[3]}))
 
@@ -138,7 +138,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
 
   /*NOTE: This test gives away part of the solution*/
   it('should fail to placeBet greater than balance', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount+1, {from: accounts[1]})
     await expectRevert(bearBucks.placeBet(accounts[1], amount+1, {from: accounts[0]}))
 
@@ -152,7 +152,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
 
   /*NOTE: This test gives away part of the solution*/
   it('should fail to placeBet if allowance of CryptoBearsContract is less than betSum', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount-1, {from: accounts[1]})
     await expectRevert(bearBucks.placeBet(accounts[1], amount, {from: accounts[0]}))
 
@@ -165,7 +165,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
   })
 
   it('should fail to removeBet if not CryptoBearsContract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount, {from: accounts[1]})
     await bearBucks.placeBet(accounts[1], amount, {from: accounts[0]})
     await expectRevert(bearBucks.removeBet(accounts[1], amount, {from: accounts[3]}))
@@ -181,7 +181,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
 
   /*NOTE: This test gives away part of the solution*/
   it('should fail to approve amount less than betSum for CryptoBearsContract', async function () {
-    await bearBucks.mint(accounts[1], amount)
+    await bearBucks.mint(accounts[1], amount, {from: accounts[0]})
     await bearBucks.approve(accounts[0], amount, {from: accounts[1]})
     await bearBucks.placeBet(accounts[1], amount, {from: accounts[0]})
     await expectRevert(bearBucks.approve(accounts[0], amount-1, {from: accounts[1]}))

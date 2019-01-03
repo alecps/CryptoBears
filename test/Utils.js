@@ -56,12 +56,19 @@ async function expectedState(token, stateChanges, accounts, name) {
         'a4': {'a0': false, 'a1': false, 'a2': false, 'a3': false},
       },
       'bets': {
-        't0': {'t1': 0, 't2': 0, 't3': 0, 't4': 0},
-        't1': {'t0': 0, 't2': 0, 't3': 0, 't4': 0},
-        't2': {'t0': 0, 't1': 0, 't3': 0, 't4': 0},
-        't3': {'t0': 0, 't1': 0, 't2': 0, 't4': 0},
-        't4': {'t0': 0, 't1': 0, 't2': 0, 't3': 0},
+        'b0': {'b1': 0, 'b2': 0, 'b3': 0, 'b4': 0},
+        'b1': {'b0': 0, 'b2': 0, 'b3': 0, 'b4': 0},
+        'b2': {'b0': 0, 'b1': 0, 'b3': 0, 'b4': 0},
+        'b3': {'b0': 0, 'b1': 0, 'b2': 0, 'b4': 0},
+        'b4': {'b0': 0, 'b1': 0, 'b2': 0, 'b3': 0},
       },
+      'timeLastFed': {
+        'b0': await getTimeOfBirthOrZero(token, 0),
+        'b1': await getTimeOfBirthOrZero(token, 1),
+        'b2': await getTimeOfBirthOrZero(token, 2),
+        'b3': await getTimeOfBirthOrZero(token, 3),
+        'b4': await getTimeOfBirthOrZero(token, 4),
+      }
     }
     break
     default:
@@ -180,12 +187,31 @@ async function actualState(token, state, accounts, name) {
       (await token.getBet.call(4, 1)).toNumber(),
       (await token.getBet.call(4, 2)).toNumber(),
       (await token.getBet.call(4, 3)).toNumber(),
+      await getTimeLastFedOrZero(token, 0),
+      await getTimeLastFedOrZero(token, 1),
+      await getTimeLastFedOrZero(token, 2),
+      await getTimeLastFedOrZero(token, 3),
+      await getTimeLastFedOrZero(token, 4),
     ]
     break
     default:
     throw new Error('Contract name not recognized ' + name)
   }
   return mapValuesDeep(state, () => values.shift())
+}
+
+async function getTimeLastFedOrZero(cryptoBears, bearID) {
+  try{
+    var res = (await cryptoBears.getTimeLastFed.call(bearID)).toNumber()
+    return (res)
+  } catch (e) {return 0}
+}
+
+async function getTimeOfBirthOrZero(cryptoBears, bearID) {
+  try{
+    var res = (await cryptoBears.getTimeOfBirth.call(bearID)).toNumber()
+    return res
+  } catch (e) {return 0}
 }
 
 async function checkBalancesSumToTotalSupply(token, accounts, name) {
@@ -220,6 +246,8 @@ async function expectRevert(contractPromise) {
     assert.fail('Expected error of type revert, but no error was received');
 }
 
+function pause(ms) { return new Promise(resolve => { setTimeout(resolve, ms)}) }
+
 
 module.exports = {
   CryptoBears: CryptoBears,
@@ -227,5 +255,6 @@ module.exports = {
   checkState: checkState,
   expectRevert: expectRevert,
   zero: zero,
+  pause: pause,
 
 }
