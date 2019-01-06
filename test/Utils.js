@@ -34,11 +34,11 @@ async function expectedState(token, stateChanges, accounts, name) {
       'totalSupply': 0,
       'balanceOf': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
       'allowance': {
-        'a0': {'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
-        'a1': {'a0': 0, 'a2': 0, 'a3': 0, 'a4': 0},
-        'a2': {'a0': 0, 'a1': 0, 'a3': 0, 'a4': 0},
-        'a3': {'a0': 0, 'a1': 0, 'a2': 0, 'a4': 0},
-        'a4': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0},
+        'a0': {'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
+        'a1': {'a0': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
+        'a2': {'a0': 0, 'a1': 0, 'a3': 0, 'a4': 0, 'cb': 0},
+        'a3': {'a0': 0, 'a1': 0, 'a2': 0, 'a4': 0, 'cb': 0},
+        'a4': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'cb': 0},
       },
       'betSum': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
     }
@@ -96,6 +96,7 @@ async function expectedState(token, stateChanges, accounts, name) {
 async function actualState(token, state, accounts, name) {
   switch (name) {
     case 'BearBucks':
+    var cbAddress = await token._CryptoBearsContract.call()
     var values = [
       (await token.totalSupply.call()).toNumber(),
       (await token.balanceOf.call(accounts[0])).toNumber(),
@@ -107,22 +108,27 @@ async function actualState(token, state, accounts, name) {
       (await token.allowance.call(accounts[0], accounts[2])).toNumber(),
       (await token.allowance.call(accounts[0], accounts[3])).toNumber(),
       (await token.allowance.call(accounts[0], accounts[4])).toNumber(),
+      (await token.allowance.call(accounts[0], cbAddress)).toNumber(),
       (await token.allowance.call(accounts[1], accounts[0])).toNumber(),
       (await token.allowance.call(accounts[1], accounts[2])).toNumber(),
       (await token.allowance.call(accounts[1], accounts[3])).toNumber(),
       (await token.allowance.call(accounts[1], accounts[4])).toNumber(),
+      (await token.allowance.call(accounts[1], cbAddress)).toNumber(),
       (await token.allowance.call(accounts[2], accounts[0])).toNumber(),
       (await token.allowance.call(accounts[2], accounts[1])).toNumber(),
       (await token.allowance.call(accounts[2], accounts[3])).toNumber(),
       (await token.allowance.call(accounts[2], accounts[4])).toNumber(),
+      (await token.allowance.call(accounts[2], cbAddress)).toNumber(),
       (await token.allowance.call(accounts[3], accounts[0])).toNumber(),
       (await token.allowance.call(accounts[3], accounts[1])).toNumber(),
       (await token.allowance.call(accounts[3], accounts[2])).toNumber(),
       (await token.allowance.call(accounts[3], accounts[4])).toNumber(),
+      (await token.allowance.call(accounts[3], cbAddress)).toNumber(),
       (await token.allowance.call(accounts[4], accounts[0])).toNumber(),
       (await token.allowance.call(accounts[4], accounts[1])).toNumber(),
       (await token.allowance.call(accounts[4], accounts[2])).toNumber(),
       (await token.allowance.call(accounts[4], accounts[3])).toNumber(),
+      (await token.allowance.call(accounts[4], cbAddress)).toNumber(),
       (await token.betSum.call(accounts[0])).toNumber(),
       (await token.betSum.call(accounts[1])).toNumber(),
       (await token.betSum.call(accounts[2])).toNumber(),

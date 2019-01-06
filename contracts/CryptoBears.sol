@@ -5,26 +5,13 @@ import "./BearBucks.sol";
 
 contract CryptoBears is ERC721 {
 
-  event bearFed(
-    uint256 bearID,
-    uint newTimeLastFed
-  );
+  event bearFed(uint256 bearID, uint newTimeLastFed);
 
-  event betPlaced(
-    uint256 bettor,
-    uint256 opponent,
-    uint256 amount
-  );
+  event betPlaced(uint256 bettor, uint256 opponent, uint256 amount);
 
-  event betRemoved(
-    uint256 bettor,
-    uint256 opponent
-  );
+  event betRemoved(uint256 bettor, uint256 opponent);
 
-  event betSettled(
-    uint256 winner,
-    uint256 loser
-  );
+  event betSettled(uint256 winner, uint256 loser);
 
   struct Bear {
     uint timeOfBirth;
@@ -97,7 +84,6 @@ contract CryptoBears is ERC721 {
     require(_BearBucksContract.balanceOf(msg.sender) >= amount);
 
     uint mealsNeeded = getMealsNeeded(bearID);
-    require(mealsNeeded > 0);
     if (mealsNeeded > 0) {
       uint mealsFed = amount.div(_feedingCost);
       if (mealsFed > mealsNeeded) {
@@ -141,7 +127,7 @@ contract CryptoBears is ERC721 {
     require(amount > 0);
     require(_bets[bearID][opponentID] == 0);
 
-    _BearBucksContract.placeBet(msg.sender, amount);
+    _BearBucksContract.placeBet(ownerOf(bearID), amount);
     _bets[bearID][opponentID] = amount;
 
     emit betPlaced(bearID, opponentID, amount);
@@ -150,15 +136,14 @@ contract CryptoBears is ERC721 {
 
   /*WARNING: I think there might be a bug / vulnerability with feeding while bets are active*/
 
-  // Should this have a notHungry modifier??
-  function removeBet(uint256 bearID, uint256 opponentID)
-    exists(bearID) exists(opponentID)
-  {
+  /*WARNING: self bets imply self transferFrom*/
+
+  function removeBet(uint256 bearID, uint256 opponentID) {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
     require(_bets[bearID][opponentID] > 0);
 
-    _BearBucksContract.removeBet(msg.sender, _bets[bearID][opponentID]);
+    _BearBucksContract.removeBet(ownerOf(bearID), _bets[bearID][opponentID]);
     _bets[bearID][opponentID] = 0;
 
     emit betRemoved(bearID, opponentID);
@@ -170,9 +155,7 @@ contract CryptoBears is ERC721 {
   }
 
   /*NOTE: Race condition vulnerability. Remove bet when this transaction is posted */
-  function payWinner(uint256 winner, uint256 loser)
-    exists(winner) exists(loser) onlyManager
-  {
+  function payWinner(uint256 winner, uint256 loser) onlyManager {
     /*Begin Solution*/
     require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
 
@@ -187,8 +170,7 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  //TODO: write tests
-  //TODO: segment tests
   //TODO: deal with vulnerabilities, check for doubles and more
+  //TODO: test events
 
 }
