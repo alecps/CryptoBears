@@ -86,7 +86,7 @@ contract ERC20 is IERC20 {
     public returns (bool)
   {
     /*Begin Solution*/
-    require(value <= _allowed[from][msg.sender]);
+    require(value <= _allowed[from][msg.sender]);//You technically dont actually need this because of SafeMath
 
     _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(value);
     _transfer(from, to, value);
