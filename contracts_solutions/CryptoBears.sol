@@ -3,14 +3,15 @@ pragma solidity ^0.4.24;
 import "./Tokens/ERC721.sol";
 import "./BearBucks.sol";
 
+/**
+ * TODO: add header comment
+ */
 contract CryptoBears is ERC721 {
+  string public constant contractName = 'CryptoBears'; // For testing.
 
   event bearFed(uint256 bearID, uint newTimeLastFed);
-
   event betPlaced(uint256 bettor, uint256 opponent, uint256 amount);
-
   event betRemoved(uint256 bettor, uint256 opponent);
-
   event betSettled(uint256 winner, uint256 loser);
 
   struct Bear {
@@ -20,12 +21,6 @@ contract CryptoBears is ERC721 {
     string name;
   }
 
-  string public constant contractName = 'CryptoBears';
-
-  Bear[] _bears;
-
-  mapping(uint256 => mapping(uint256 => uint256)) _bets;
-
   uint _startBalance;
   uint _feedingCost;
   uint _feedingInterval;
@@ -33,12 +28,19 @@ contract CryptoBears is ERC721 {
   BearBucks public _BearBucksContract;
   address public _manager;
 
+  mapping(uint256 => mapping(uint256 => uint256)) _bets;
+  Bear[] _bears;
+
+  /**
+   * TODO: add header comment
+   */
   constructor(
     uint startBalance,
     uint feedingCost,
     uint feedingInterval,
     address manager
   ) {
+    //This contract deploys its own instance of the BearBucks contract.
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
     _feedingCost = feedingCost;
@@ -47,7 +49,7 @@ contract CryptoBears is ERC721 {
   }
 
   modifier exists(uint256 bearID) {
-    require(_exists(bearID));
+    require(_exists(bearID), "Bear with specified ID does not exist.");
     _;
   }
 
@@ -57,10 +59,13 @@ contract CryptoBears is ERC721 {
   }
 
   modifier onlyManager() {
-    require(msg.sender == _manager, "msg.sender is not manager");
+    require(msg.sender == _manager, "msg.sender is not manager.");
     _;
   }
 
+  /**
+   * TODO: add header comment
+   */
   function newBear(uint256 genes, address owner, string name)
     onlyManager returns(uint256)
   {
@@ -78,10 +83,54 @@ contract CryptoBears is ERC721 {
     return bearID;
   }
 
+  /**
+   * TODO: add header comment
+   */
+  function getNumBears() view returns(uint256) {
+    return _bears.length;
+  }
+
+  /**
+   * TODO: add header comment
+   */
+  function getTimeOfBirth(uint256 bearID)
+    external exists(bearID) view returns(uint) {
+      return _bears[bearID].timeOfBirth;
+  }
+
+  /**
+   * TODO: add header comment
+   */
+  function getTimeLastFed(uint256 bearID)
+    external exists(bearID) view returns(uint) {
+      return _bears[bearID].timeLastFed;
+  }
+
+  /**
+   * TODO: add header comment
+   */
+  function getMealsNeeded(uint256 bearID)
+    exists(bearID) view returns(uint)
+  {
+    Bear memory bear = _bears[bearID];
+    uint timeSinceLastFed = now.sub(bear.timeLastFed);
+    return timeSinceLastFed.div(_feedingInterval);
+  }
+
+  /**
+   * TODO: add header comment
+   */
+  function getBet(uint256 bearID, uint256 opponentID) view returns(uint256) {
+    return _bets[bearID][opponentID];
+  }
+
+  /**
+   * TODO: add header comment
+   */
   function feed(uint256 bearID, uint256 amount) exists(bearID) {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
-    require(_BearBucksContract.balanceOf(msg.sender) >= amount);
+    require(_BearBucksContract.freeBalance(msg.sender) >= amount);
 
     uint mealsNeeded = getMealsNeeded(bearID);
     if (mealsNeeded > 0) {
@@ -97,28 +146,9 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  function getNumBears() view returns(uint256) {
-    return _bears.length;
-  }
-
-  function getMealsNeeded(uint256 bearID)
-    exists(bearID) view returns(uint)
-  {
-    Bear memory bear = _bears[bearID];
-    uint timeSinceLastFed = now.sub(bear.timeLastFed);
-    return timeSinceLastFed.div(_feedingInterval);
-  }
-
-  function getTimeLastFed(uint256 bearID)
-    external exists(bearID) view returns(uint) {
-      return _bears[bearID].timeLastFed;
-  }
-
-  function getTimeOfBirth(uint256 bearID)
-    external exists(bearID) view returns(uint) {
-      return _bears[bearID].timeOfBirth;
-  }
-
+  /**
+   * TODO: add header comment
+   */
   function placeBet(uint256 bearID, uint256 opponentID, uint256 amount)
     exists(bearID) exists(opponentID) notHungry(bearID)
   {
@@ -138,6 +168,9 @@ contract CryptoBears is ERC721 {
 
   /*WARNING: self bets imply self transferFrom*/
 
+  /**
+   * TODO: add header comment
+   */
   function removeBet(uint256 bearID, uint256 opponentID) {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
@@ -150,11 +183,11 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  function getBet(uint256 bearID, uint256 opponentID) view returns(uint256) {
-    return _bets[bearID][opponentID];
-  }
-
   /*NOTE: Race condition vulnerability. Remove bet when this transaction is posted */
+
+  /**
+   * TODO: add header comment
+   */
   function payWinner(uint256 winner, uint256 loser) onlyManager {
     /*Begin Solution*/
     require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
@@ -170,7 +203,7 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  //TODO: deal with vulnerabilities, check for doubles and more
-  //TODO: test events
+  /*TODO: deal with vulnerabilities, check for doubles and more*/
+  /*TODO: test events*/
 
 }

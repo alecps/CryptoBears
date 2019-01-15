@@ -89,6 +89,36 @@ contract('CryptoBearsNegativeTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
   })
 
+  it('should fail to feed if balance would be less than betSum', async function () {
+    var bear1 = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    assert.equal(bear1, 0)
+    await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
+    var bear2 = (await cryptoBears.newBear.call(genes, accounts[1], name, {from: accounts[5]})).toNumber()
+    assert.equal(bear2, 1)
+    await cryptoBears.newBear(genes, accounts[1], name, {from: accounts[5]})
+
+    await bearBucks.approve(cryptoBears.address, startBalance, {from: accounts[0]})
+    await cryptoBears.placeBet(bear1, bear2, startBalance, {from: accounts[0]})
+
+    await expectRevert(cryptoBears.feed(0, feedingCost, {from: accounts[0]}))
+
+    var cryptoBearsStateChanges = [
+      {'var': 'balanceOf.a0', 'expect': 1},
+      {'var': 'balanceOf.a1', 'expect': 1},
+      {'var': 'ownerOf.b0', 'expect': accounts[0]},
+      {'var': 'ownerOf.b1', 'expect': accounts[1]},
+      {'var': 'bets.b0.b1', 'expect': startBalance},
+    ]
+    var bearBucksStateChanges = [
+      {'var': 'totalSupply', 'expect': startBalance*2},
+      {'var': 'balanceOf.a0', 'expect': startBalance},
+      {'var': 'balanceOf.a1', 'expect': startBalance},
+      {'var': 'betSum.a0', 'expect': startBalance},
+      {'var': 'allowance.a0.cb', 'expect': startBalance},
+    ]
+    await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
+  })
+
   it('should fail to getMealsNeeded if bear does not exist', async function () {
     await expectRevert(cryptoBears.getMealsNeeded(0))
     await checkState([cryptoBears, bearBucks], [[], []], accounts)
