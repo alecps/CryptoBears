@@ -1,3 +1,8 @@
+/**
+* This contract is required for Truffle to work correctly.
+* DO NOT EDIT THIS CODE.
+*/
+
 pragma solidity ^0.4.24;
 
 contract Migrations {
