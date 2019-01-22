@@ -1,3 +1,11 @@
+/****************************DO NOT EDIT THIS CODE*****************************/
+
+/**
+* This code is taken directly from the OpenZeppelin-Solidity repository. Many
+* high profile DApps use SafeMath to ensure mathematical operations don't
+* introduce security vulnerabilities to their contracts.
+*/
+
 pragma solidity ^0.4.24;
 
 /**

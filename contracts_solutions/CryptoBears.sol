@@ -130,6 +130,7 @@ contract CryptoBears is ERC721 {
   function feed(uint256 bearID, uint256 amount) exists(bearID) {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
+    require(amount >= _feedingCost);
     require(_BearBucksContract.freeBalance(msg.sender) >= amount);
 
     uint mealsNeeded = getMealsNeeded(bearID);
@@ -203,7 +204,13 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
+  /*TODO: Finish contract comments */
+  /*TODO: Finish testing suite comments */
   /*TODO: deal with vulnerabilities, check for doubles and more*/
   /*TODO: test events*/
+  /*TODO: add gas limit*/
+  /*TODO: Part 2 */
+
+
 
 }
