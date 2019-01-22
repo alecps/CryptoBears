@@ -24,7 +24,8 @@ contract BearBucks is ERC20 {
    * instantiated this contract.
    */
   modifier onlyCryptoBearsContract() {
-    require(msg.sender == _CryptoBearsContract);
+    require(msg.sender == _CryptoBearsContract,
+      "msg.sender is not cryptoBears contract.");
     _;
   }
 

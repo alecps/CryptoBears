@@ -197,6 +197,4 @@ contract ERC721 is IERC721 {
     }
   }
 
-  /*TODO: add note about missing code */
-
 }

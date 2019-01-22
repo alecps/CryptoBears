@@ -4,7 +4,15 @@ import "../Support/IERC20.sol";
 import "../Support/SafeMath.sol";
 
 /**
-* TODO: add header comment
+* This contract implements the ERC20 token standard. In addition to the
+* functions specified by the IERC20 interface it has two internal functions,
+* _mint and _burn, which allow tokens to be created and destroyed. Four of the
+* below functions have been left for you to fill in. Although you are welcome
+* to copy the solutions verbatem from the OpenZeppelin-Solidity repository, we
+* recommend that you take a stab at implementing them yourself first, as it will
+* aid in your understanding of the code and make the rest of the assignment
+* easier. The ERC20 standard is incredibly important in the world of smart
+* contract developement, and it is useful to to know the code well.
 */
 contract ERC20 is IERC20 {
  /*
@@ -19,6 +27,12 @@ contract ERC20 is IERC20 {
 
   /* Stores all allowances. */
   mapping (address => mapping (address => uint256)) private _allowed;
+
+ /*
+  * NOTE: ERC20 spec requires Transfer events to be emmitted whenever _balances
+  * is modified and Approval events to be emmitted whenever _allowed is
+  * modified.
+  */
 
   /* Stores the total supply of the token. */
   uint256 private _totalSupply;

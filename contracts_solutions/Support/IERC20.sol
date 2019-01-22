@@ -1,8 +1,15 @@
-pragma solidity ^0.4.24;
+/****************************DO NOT EDIT THIS CODE*****************************/
+pragma solidity ^0.4.24;//Tells the compiler which version of Solidity to use.
 
 /**
- * TODO: ADD COMMENT
- */
+* This interface specifies the functions that must be implemented in order to
+* comply with the ERC20 token standard. By inheriting this interface, our ERC20
+* contract garauntees compliance with the standard —— the contract will not
+* compile unless all the required functions are implemented.
+*
+* To learn more about interfaces, see the Solidity docs:
+* https://solidity.readthedocs.io/en/v0.4.24/contracts.html#interfaces
+*/
 interface IERC20 {
 
   event Transfer(
