@@ -3,7 +3,10 @@ pragma solidity ^0.4.24;
 import "./Tokens/ERC20.sol";
 
 /**
- * TODO: add header comment
+ * This contract is instantiated by the CryptoBears contract and inherits from
+ * ERC20. It gives the CryptoBears contract the ability to mint/burn BearBucks
+ * and keeps track of the total amount of BearBucks each player is actively
+ * betting.
  */
 contract BearBucks is ERC20 {
   string public constant contractName = 'BearBucks'; // For testing.
@@ -62,7 +65,8 @@ contract BearBucks is ERC20 {
 
   /*Begin Solution*/
   /**
-   * TODO: add header comment.
+   * @param owner The address whose free (not-in-bet) balance we are querying.
+   * @return The balance of owner minus the betSum of owner.
    */
   function freeBalance(address owner) view returns(uint256) {
     return balanceOf(owner).sub(_betSum[owner]);
@@ -70,7 +74,9 @@ contract BearBucks is ERC20 {
   /*End Solution*/
 
   /**
-   * TODO: add header comment.
+   * Adds to the sum of active bets placed by the given address.
+   * @param owner The address for which the bet is being placed.
+   * @param amount The number of BearBucks being bet as a uint256.
    */
   function placeBet(address owner, uint256 amount) onlyCryptoBearsContract {
     /*Begin Solution*/
@@ -81,7 +87,9 @@ contract BearBucks is ERC20 {
   }
 
   /**
-   * TODO: add header comment
+   * Subtracts from the sum of active bets placed by the given address.
+   * @param owner The address whose bet is being removed.
+   * @param amount The number of BearBucks no longer being bet.
    */
   function removeBet(address owner, uint256 amount) onlyCryptoBearsContract {
     /*Begin Solution*/
@@ -91,7 +99,10 @@ contract BearBucks is ERC20 {
 
   /*Begin Solution*/
   /**
-   * TODO: add header comment
+   * Overrides approve(...) from ERC20 contract, adding a check to prevent
+   * users from decreasing the allowance of the CryptoBears contract below their
+   * betSum. Without this check, users could prevent funds from being transfered
+   * from them when they lose bets.
    */
   function approve(address spender, uint256 value) returns (bool) {
     if(spender == _CryptoBearsContract) {

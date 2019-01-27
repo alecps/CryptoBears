@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 /**
 * This standardized contract is required for Truffle to work correctly. It is
 * used to help deploy smart contracts to the blockchain, and does not have any
-* unique relevance to our particular DApp.
+* specific relevance to our DApp.
 */
 contract Migrations {
     address public owner;

@@ -4,7 +4,13 @@ import "../Support/IERC721.sol";
 import "../Support/SafeMath.sol";
 
 /**
-* TODO: add header comment
+* This contract implements the ERC721 token standard. In addition to the
+* functions specified by the IERC721 interface, it has five internal functions
+* (you're welcome to add more if you wish). Two of the below functions,
+* _transferFrom and _mint, have been left for you to fill in. As with the ERC20
+* contract, you may copy the solutions verbatim from the OpenZeppelin-Solidity
+* repository, but we recommend that you try it yourself first.
+* https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC721/ERC721.sol
 */
 contract ERC721 is IERC721 {
   using SafeMath for uint256;
