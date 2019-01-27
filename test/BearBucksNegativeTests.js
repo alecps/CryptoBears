@@ -9,9 +9,10 @@ const amount = 100
 
 contract('BearBucksNegativeTests', async function (accounts) {
 
+  // This runs before each test.
   beforeEach('Make fresh contract', async function () {
     // We let accounts[5] represent the CryptoBearsContract.
-    bearBucks = await BearBucks.new({from: accounts[5]})
+    bearBucks = await BearBucks.new({from: accounts[5]})//{from: BLANK specifies msg.sender}
   })
 
   it('should have correct initial state', async function () {

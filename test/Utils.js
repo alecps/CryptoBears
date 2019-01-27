@@ -12,6 +12,7 @@ const mapValuesDeep = (v, callback) => (
 )
 const zero = "0x0000000000000000000000000000000000000000"
 
+// Checks for differences between expected and actual states of contract.
 async function checkState(_tokens, _stateChanges, _accounts) {
   var numTokens = _tokens.length
   assert.equal(numTokens, _stateChanges.length)
@@ -26,6 +27,7 @@ async function checkState(_tokens, _stateChanges, _accounts) {
   }
 }
 
+// Builds expected state of contract using custom variables specified in test.
 async function expectedState(token, stateChanges, accounts, name) {
   var name = await token.contractName.call()
   switch (name) {
@@ -93,11 +95,16 @@ async function expectedState(token, stateChanges, accounts, name) {
   return state
 }
 
+// Gets actual state of contract.
 async function actualState(token, state, accounts, name) {
   switch (name) {
     case 'BearBucks':
     var cbAddress = await token._CryptoBearsContract.call()
     var values = [
+      /**
+       * We use .call() when just trying to read a value without modifying
+       * contract state.
+       */
       (await token.totalSupply.call()).toNumber(),
       (await token.balanceOf.call(accounts[0])).toNumber(),
       (await token.balanceOf.call(accounts[1])).toNumber(),
@@ -239,6 +246,7 @@ async function checkBalancesSumToTotalSupply(token, accounts, name) {
     'total supply does not equal sum of balances for ' + name)
 }
 
+// Used for negative tests.
 async function expectRevert(contractPromise) {
     try {
         await contractPromise;
@@ -252,6 +260,7 @@ async function expectRevert(contractPromise) {
     assert.fail('Expected error of type revert, but no error was received');
 }
 
+// Waits the specified number of ms before continuing test execution.
 function pause(ms) { return new Promise(resolve => { setTimeout(resolve, ms)}) }
 
 
@@ -262,5 +271,4 @@ module.exports = {
   expectRevert: expectRevert,
   zero: zero,
   pause: pause,
-
 }
