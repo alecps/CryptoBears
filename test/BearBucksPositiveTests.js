@@ -4,7 +4,7 @@ const CryptoBears = utils.CryptoBears
 const BearBucks = utils.BearBucks
 const checkState = utils.checkState
 
-const amount = 100;
+const amount = 100
 
 contract('BearBucksPositiveTests', async function (accounts) {
 
@@ -18,7 +18,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
   })
 
   it('should return betSum without changing state', async function () {
-    assert.equal((await bearBucks.betSum(accounts[0])).toNumber(), 0) // We have to use .toNumber() because uint256's are returned as BigNumbers. 
+    assert.equal((await bearBucks.betSum(accounts[0])).toNumber(), 0) // We have to use .toNumber() because uint256's are returned as BigNumbers.
     await checkState([bearBucks], [[]], accounts)
   })
 

@@ -1,10 +1,13 @@
 const utils = require('./Utils')
+const BigNumber = require('bignumber.js')
 
 const CryptoBears = utils.CryptoBears
 const BearBucks = utils.BearBucks
 const checkState = utils.checkState
+const checkEvent = utils.checkEvent
+const zero = utils.zero
 
-const amount = 100;
+const amount = 100
 
 contract('ERC20PositiveTests', async function (accounts) {
 
@@ -33,7 +36,8 @@ contract('ERC20PositiveTests', async function (accounts) {
   })
 
   it('should mint, increasing totalSupply and recipient balance', async function () {
-    await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
+    let event = await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
+    checkEvent('Transfer', event, [zero, accounts[0], new BigNumber(amount)])
 
     var stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
@@ -44,14 +48,16 @@ contract('ERC20PositiveTests', async function (accounts) {
 
   it('should burn, decreasing totalSupply and recipient balance', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
-    await bearBucks.burn(accounts[0], amount, {from: accounts[5]})
+    let event = await bearBucks.burn(accounts[0], amount, {from: accounts[5]})
+    checkEvent('Transfer', event, [accounts[0], zero, new BigNumber(amount)])
 
     await checkState([bearBucks], [[]], accounts)
   })
 
   it('should transfer, decreasing sender balance and increasing recipient balance', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
-    await bearBucks.transfer(accounts[1], amount, {from: accounts[0]})
+    let event = await bearBucks.transfer(accounts[1], amount, {from: accounts[0]})
+    checkEvent('Transfer', event, [accounts[0], accounts[1], new BigNumber(amount)])
 
     var stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
@@ -62,7 +68,8 @@ contract('ERC20PositiveTests', async function (accounts) {
 
   it('should approve, increasing spender allowance', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
-    await bearBucks.approve(accounts[1], amount, {from: accounts[0]})
+    let event = await bearBucks.approve(accounts[1], amount, {from: accounts[0]})
+    checkEvent('Approval', event, [accounts[0], accounts[1], new BigNumber(amount)])
 
     var stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
@@ -75,7 +82,8 @@ contract('ERC20PositiveTests', async function (accounts) {
   it('should transferFrom, reducing spender allowance and transfering from sender to recipient', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[1], amount, {from: accounts[0]})
-    await bearBucks.transferFrom(accounts[0], accounts[2], amount, {from: accounts[1]})
+    let event = await bearBucks.transferFrom(accounts[0], accounts[2], amount, {from: accounts[1]})
+    checkEvent('Transfer', event, [accounts[0], accounts[2], new BigNumber(amount)])
 
     var stateChanges = [
       {'var': 'totalSupply', 'expect': amount},

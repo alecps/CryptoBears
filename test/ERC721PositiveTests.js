@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const CryptoBears = utils.CryptoBears
 const BearBucks = utils.BearBucks
 const checkState = utils.checkState
+const checkEvent = utils.checkEvent
 const zero = utils.zero
 const pause = utils.pause
 
@@ -79,7 +80,8 @@ contract('ERC721PositiveTests', async function (accounts) {
   })
 
   it('should setApprovalForAll', async function () {
-    await cryptoBears.setApprovalForAll(accounts[1], true, {from: accounts[0]})
+    let event = await cryptoBears.setApprovalForAll(accounts[1], true, {from: accounts[0]})
+    checkEvent('ApprovalForAll', event, [accounts[0], accounts[1], true])
 
     var stateChanges = [
       {'var': 'isApprovedForAll.a0.a1', 'expect': true},
@@ -94,7 +96,8 @@ contract('ERC721PositiveTests', async function (accounts) {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
-    await cryptoBears.approve(accounts[1], bearID, {from: accounts[0]})
+    let event = await cryptoBears.approve(accounts[1], bearID, {from: accounts[0]})
+    checkEvent('Approval', event, [accounts[0], accounts[1], new BigNumber(bearID)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
@@ -113,7 +116,8 @@ contract('ERC721PositiveTests', async function (accounts) {
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await cryptoBears.setApprovalForAll(accounts[2], true, {from: accounts[0]})
-    await cryptoBears.approve(accounts[1], bearID, {from: accounts[2]})
+    let event = await cryptoBears.approve(accounts[1], bearID, {from: accounts[2]})
+    checkEvent('Approval', event, [accounts[0], accounts[1], new BigNumber(bearID)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
@@ -138,7 +142,8 @@ contract('ERC721PositiveTests', async function (accounts) {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
-    await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[0]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[0]})
+    checkEvent('Transfer', event, [accounts[0], accounts[2], new BigNumber(bearID)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a2', 'expect': 1},
@@ -156,7 +161,8 @@ contract('ERC721PositiveTests', async function (accounts) {
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await cryptoBears.approve(accounts[1], bearID, {from: accounts[0]})
-    await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[1]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[1]})
+    checkEvent('Transfer', event, [accounts[0], accounts[2], new BigNumber(bearID)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a2', 'expect': 1},
@@ -174,7 +180,8 @@ contract('ERC721PositiveTests', async function (accounts) {
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await cryptoBears.setApprovalForAll(accounts[1], true, {from: accounts[0]})
-    await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[1]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[1]})
+    checkEvent('Transfer', event, [accounts[0], accounts[2], new BigNumber(bearID)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a2', 'expect': 1},
