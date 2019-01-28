@@ -202,10 +202,6 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  /*WARNING: I think there might be a bug / vulnerability with feeding while bets are active*/
-
-  /*WARNING: self bets imply self transferFrom*/
-
   /**
    * Removes bet is BearBucks contract, updates _bets, emits betRemoved event.
    * @param bearID The unique ID of the bear whose bet is being removed.
@@ -254,9 +250,12 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  /*TODO: deal with vulnerabilities, check for doubles and more*/
+  //NOTE: bearBucks don't transfer along with bears. Change this in part 2?
+
+  //Vulnerabilioty w multiple competing allowances?
+
+  /*TODO: deal with vulnerabilities*/
   /*TODO: add check for approve vulnerability in ERC20*/
-  /*TODO: add gas limit*/
   /*TODO: Part 2 */
 
 }
