@@ -156,6 +156,25 @@ contract('ERC721PositiveTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
   })
 
+  //NOTE: bearBucks don't transfer along with bears. Change this in part 2?
+  it('should transferFrom to self without changing state when msg.sender is owner', async function () {
+    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    assert.equal(bearID, 0)
+    await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[0], bearID, {from: accounts[0]})
+    checkEvent('Transfer', event, [accounts[0], accounts[0], new BigNumber(bearID)])
+
+    var cryptoBearsStateChanges = [
+      {'var': 'balanceOf.a0', 'expect': 1},
+      {'var': 'ownerOf.b0', 'expect': accounts[0]}
+    ]
+    var bearBucksStateChanges = [
+      {'var': 'totalSupply', 'expect': startBalance},
+      {'var': 'balanceOf.a0', 'expect': startBalance}
+    ]
+    await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
+  })
+
   it('should transferFrom when msg.sender is approved', async function () {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
@@ -175,6 +194,25 @@ contract('ERC721PositiveTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
   })
 
+  it('should transferFrom to self without changing state when msg.sender is approved', async function () {
+    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    assert.equal(bearID, 0)
+    await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
+    await cryptoBears.approve(accounts[1], bearID, {from: accounts[0]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[1], bearID, {from: accounts[1]})
+    checkEvent('Transfer', event, [accounts[0], accounts[1], new BigNumber(bearID)])
+
+    var cryptoBearsStateChanges = [
+      {'var': 'balanceOf.a1', 'expect': 1},
+      {'var': 'ownerOf.b0', 'expect': accounts[1]}
+    ]
+    var bearBucksStateChanges = [
+      {'var': 'totalSupply', 'expect': startBalance},
+      {'var': 'balanceOf.a0', 'expect': startBalance}
+    ]
+    await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
+  })
+
   it('should transferFrom when msg.sender isApprovedForAll', async function () {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
@@ -186,6 +224,26 @@ contract('ERC721PositiveTests', async function (accounts) {
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a2', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[2]},
+      {'var': 'isApprovedForAll.a0.a1', 'expect': true},
+    ]
+    var bearBucksStateChanges = [
+      {'var': 'totalSupply', 'expect': startBalance},
+      {'var': 'balanceOf.a0', 'expect': startBalance}
+    ]
+    await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
+  })
+
+  it('should transferFrom to self without chaning state when msg.sender isApprovedForAll', async function () {
+    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    assert.equal(bearID, 0)
+    await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
+    await cryptoBears.setApprovalForAll(accounts[1], true, {from: accounts[0]})
+    let event = await cryptoBears.transferFrom(accounts[0], accounts[1], bearID, {from: accounts[1]})
+    checkEvent('Transfer', event, [accounts[0], accounts[1], new BigNumber(bearID)])
+
+    var cryptoBearsStateChanges = [
+      {'var': 'balanceOf.a1', 'expect': 1},
+      {'var': 'ownerOf.b0', 'expect': accounts[1]},
       {'var': 'isApprovedForAll.a0.a1', 'expect': true},
     ]
     var bearBucksStateChanges = [
