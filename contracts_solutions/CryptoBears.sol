@@ -230,10 +230,10 @@ contract CryptoBears is ERC721 {
    * contract, updates _bets, emits betSettled event.
    *
    * This function is called by the manager account, which is controlled
-   * off-chain. We keep this code off-chain because the Ethereum blockchain is
-   * deterministic, which makes pseudo-random number generators (PRNGs) tricky
-   * to implement. If you're curious about PRNGs in smart contracts, check out
-   * this article.
+   * off-chain. We keep the manager code off-chain because the Ethereum
+   * blockchain is deterministic, which makes pseudo-random number generators
+   * (PRNGs) tricky to implement. If you're curious about PRNGs in smart
+   * contracts, check out this article.
    * https://blog.positive.com/predicting-random-numbers-in-ethereum-smart-contracts-e5358c6b8620
    *
    * @param winner The unique ID of the bear who won the bet.
@@ -256,11 +256,7 @@ contract CryptoBears is ERC721 {
 
   /*TODO: deal with vulnerabilities, check for doubles and more*/
   /*TODO: add check for approve vulnerability in ERC20*/
-  /*TODO: test events*/
   /*TODO: add gas limit*/
   /*TODO: Part 2 */
-  /*TODO: add test ID numbers*/
-
-
 
 }

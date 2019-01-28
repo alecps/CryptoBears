@@ -4,6 +4,8 @@ const BigNumber = require('bignumber.js')
 const CryptoBears = utils.CryptoBears
 const BearBucks = utils.BearBucks
 const checkState = utils.checkState
+const checkEvent = utils.checkEvent
+
 const zero = utils.zero
 const pause = utils.pause
 
@@ -53,11 +55,11 @@ contract('CryptoBearsPositiveTests', async function (accounts) {
 
     // Wait for one feedingInterval, then feed.
     await pause(feedingInterval)
-    await cryptoBears.feed(bearID, feedingCost, {from: accounts[0]})
-
+    let event = await cryptoBears.feed(bearID, feedingCost, {from: accounts[0]})
     var newTimeLastFed =
       (await cryptoBears.getTimeOfBirth.call(bearID)).toNumber() +
       (feedingInterval/1000)
+    checkEvent('bearFed', event, [new BigNumber(bearID), new BigNumber(newTimeLastFed)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
@@ -135,7 +137,8 @@ contract('CryptoBearsPositiveTests', async function (accounts) {
     await cryptoBears.newBear(genes, accounts[1], name, {from: accounts[5]})
 
     await bearBucks.approve(cryptoBears.address, feedingCost, {from: accounts[0]})
-    await cryptoBears.placeBet(bear1, bear2, feedingCost, {from: accounts[0]})
+    let event = await cryptoBears.placeBet(bear1, bear2, feedingCost, {from: accounts[0]})
+    checkEvent('betPlaced', event, [new BigNumber(bear1), new BigNumber(bear2), new BigNumber(feedingCost)])
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'balanceOf.a1', 'expect': 1},
@@ -163,7 +166,8 @@ contract('CryptoBearsPositiveTests', async function (accounts) {
 
     await bearBucks.approve(cryptoBears.address, feedingCost, {from: accounts[0]})
     await cryptoBears.placeBet(bear1, bear2, feedingCost, {from: accounts[0]})
-    await cryptoBears.removeBet(bear1, bear2, {from: accounts[0]})
+    let event = await cryptoBears.removeBet(bear1, bear2, {from: accounts[0]})
+    checkEvent('betRemoved', event, [new BigNumber(bear1), new BigNumber(bear2)])
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'balanceOf.a1', 'expect': 1},
@@ -192,7 +196,8 @@ contract('CryptoBearsPositiveTests', async function (accounts) {
     await bearBucks.approve(cryptoBears.address, feedingCost, {from: accounts[1]})
     await cryptoBears.placeBet(bear2, bear1, feedingCost, {from: accounts[1]})
 
-    await cryptoBears.payWinner(bear1, bear2, {from: accounts[5]})
+    let event = await cryptoBears.payWinner(bear1, bear2, {from: accounts[5]})
+    checkEvent('betSettled', event, [new BigNumber(bear1), new BigNumber(bear2)])
 
     var cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},

@@ -12,6 +12,20 @@ const mapValuesDeep = (v, callback) => (
 )
 const zero = "0x0000000000000000000000000000000000000000"
 
+// Checks whether an event was properly emmitted. 
+async function checkEvent(type, event, params) {
+  let eventFound = false
+  event.logs.forEach((o) => {
+    if (o.event === type) {
+      eventFound = true
+      assertDiff.deepEqual(Object.values(o.args), params)
+    }
+  })
+  if (!eventFound) {
+    throw new Error('The specified event was not emmitted: ' + type)
+  }
+}
+
 // Checks for differences between expected and actual states of contract.
 async function checkState(_tokens, _stateChanges, _accounts) {
   var numTokens = _tokens.length
@@ -271,4 +285,5 @@ module.exports = {
   expectRevert: expectRevert,
   zero: zero,
   pause: pause,
+  checkEvent: checkEvent,
 }
