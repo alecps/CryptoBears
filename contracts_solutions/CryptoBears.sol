@@ -11,40 +11,42 @@ import "./BearBucks.sol";
 contract CryptoBears is ERC721 {
   string public constant contractName = 'CryptoBears'; // For testing.
 
-  event bearFed(uint256 bearID, uint newTimeLastFed);
+  event bearFed(uint256 bearID, uint256 newTimeLastFed);
   event betPlaced(uint256 bettor, uint256 opponent, uint256 amount);
   event betRemoved(uint256 bettor, uint256 opponent);
   event betSettled(uint256 winner, uint256 loser);
 
   struct Bear {
-    uint timeOfBirth;
-    uint genes;
-    uint timeLastFed;
+    uint256 timeOfBirth;
+    uint256 genes;
+    uint256 timeLastFed;
     string name;
   }
 
-  uint public _startBalance;
-  uint public _feedingCost;
-  uint public _feedingInterval;
+  uint256 public _startBalance;
+  uint256 public _feedingCost;
+  uint256 public _feedingInterval;
 
   BearBucks public _BearBucksContract;
-  address public _manager;
+  address public _referee;
+  address public _minter;
 
   mapping(uint256 => mapping(uint256 => uint256)) internal _bets;
   Bear[] internal _bears;
 
   constructor(
-    uint startBalance,
-    uint feedingCost,
-    uint feedingInterval,
-    address manager
+    uint256 startBalance,
+    uint256 feedingCost,
+    uint256 feedingInterval,
+    address referee
   ) {
     //This contract deploys its own instance of the BearBucks contract.
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
     _feedingCost = feedingCost;
     _feedingInterval = feedingInterval;
-    _manager = manager;
+    _referee = referee;
+    _minter = referee;
   }
 
   modifier exists(uint256 bearID) {
@@ -57,9 +59,21 @@ contract CryptoBears is ERC721 {
     _;
   }
 
-  modifier onlyManager() {
-    require(msg.sender == _manager, "msg.sender is not manager.");
+  modifier onlyReferee() {
+    require(msg.sender == _referee, "msg.sender is not _referee.");
     _;
+  }
+
+  modifier onlyMinter() {
+    require(msg.sender == _minter, "msg.sender is not _minter.");
+    _;
+  }
+
+  /*TODO: add header */
+  function setMinter(address newMinter) onlyMinter {
+    //TODO: add checks?
+    _minter = newMinter;
+    _BearBucksContract.setMinter(newMinter);
   }
 
   /**
@@ -73,7 +87,7 @@ contract CryptoBears is ERC721 {
    *
    */
   function newBear(uint256 genes, address owner, string name)
-    onlyManager returns(uint256)
+    onlyMinter returns(uint256)
   {
 
     /*Have students choose and explain keyword choice.*/
@@ -112,7 +126,7 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the given bear's time of birth.
    */
   function getTimeOfBirth(uint256 bearID)
-    external exists(bearID) view returns(uint) {
+    external exists(bearID) view returns(uint256) {
       return _bears[bearID].timeOfBirth;
   }
 
@@ -121,7 +135,7 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the given bear's time last fed.
    */
   function getTimeLastFed(uint256 bearID)
-    external exists(bearID) view returns(uint) {
+    external exists(bearID) view returns(uint256) {
       return _bears[bearID].timeLastFed;
   }
 
@@ -130,7 +144,7 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the meals needed by the given bear.
    */
   function getMealsNeeded(uint256 bearID)
-    exists(bearID) view returns(uint)
+    exists(bearID) view returns(uint256)
   {
     /*Have students choose and explain keyword choice.*/
     /**
@@ -138,7 +152,7 @@ contract CryptoBears is ERC721 {
      * storage to memory.
      */
     Bear storage bear = _bears[bearID];
-    uint timeSinceLastFed = now.sub(bear.timeLastFed);
+    uint256 timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
   }
 
@@ -165,9 +179,9 @@ contract CryptoBears is ERC721 {
     require(amount >= _feedingCost);
     require(_BearBucksContract.freeBalance(msg.sender) >= amount);
 
-    uint mealsNeeded = getMealsNeeded(bearID);
+    uint256 mealsNeeded = getMealsNeeded(bearID);
     if (mealsNeeded > 0) {
-      uint mealsFed = amount.div(_feedingCost);
+      uint256 mealsFed = amount.div(_feedingCost);
       if (mealsFed > mealsNeeded) {
         mealsFed = mealsNeeded;
       }
@@ -235,7 +249,7 @@ contract CryptoBears is ERC721 {
    * @param winner The unique ID of the bear who won the bet.
    * @param loser The unique ID of the bear who lost the bet.
    */
-  function payWinner(uint256 winner, uint256 loser) onlyManager {
+  function payWinner(uint256 winner, uint256 loser) onlyReferee {
     /*Begin Solution*/
     require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
 
@@ -250,7 +264,13 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  /*TODO: Part 2 */
-  /*TODO: Make stencil */
+  /*TODO: Write Crowdsale tests */
+  /*TODO: update tests for minter roles */
+  /*TODO: get rid of comments */
+  /*TODO: Make stencil / proof-read comments */
+  /*TODO: make uint256 consistent*/
+  /*TODO: get rid of compilation errors */
+  /*TODO: rename repository */
   /*TODO: update handout */
+
 }
