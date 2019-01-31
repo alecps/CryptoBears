@@ -44,7 +44,6 @@ contract('ERC20NegativeTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  //NOTE: could there be a betting vulnerability with this? no check on approve
   it('should fail to transferFrom more than owner balance', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[1], amount+1, {from: accounts[0]})
@@ -75,7 +74,6 @@ contract('ERC20NegativeTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  //NOTE: what about self transfers??
   it('should fail to transfer more than balance', async function () {
     await expectRevert(bearBucks.transfer(accounts[1], amount), {from: accounts[0]})
     await checkState([bearBucks], [[]], accounts)

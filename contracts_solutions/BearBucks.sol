@@ -106,7 +106,7 @@ contract BearBucks is ERC20 {
    */
   function approve(address spender, uint256 value) returns (bool) {
     if(spender == _CryptoBearsContract) {
-      require(value >= _betSum[msg.sender]);
+      require(value >= _betSum[msg.sender]); // This fixes testExample3 in TestVulnerabilities.sol
     }
     super.approve(spender, value);
   }

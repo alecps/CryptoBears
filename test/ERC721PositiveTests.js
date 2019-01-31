@@ -137,7 +137,6 @@ contract('ERC721PositiveTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [[], []], accounts)
   })
 
-  //NOTE: bearBucks don't transfer along with bears. Change this in part 2?
   it('should transferFrom when msg.sender is owner', async function () {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
@@ -156,7 +155,6 @@ contract('ERC721PositiveTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
   })
 
-  //NOTE: bearBucks don't transfer along with bears. Change this in part 2?
   it('should transferFrom to self without changing state when msg.sender is owner', async function () {
     var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
