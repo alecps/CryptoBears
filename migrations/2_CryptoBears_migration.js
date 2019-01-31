@@ -6,4 +6,5 @@ const feedingInterval = 60 //seconds
 
 module.exports = function(deployer, network, accounts) {
   deployer.deploy(CryptoBears, startBalance, feedingCost, feedingInterval, accounts[5])
+  
 }

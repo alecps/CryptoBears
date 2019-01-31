@@ -18,6 +18,9 @@ contract BearBucks is ERC20 {
   /* Stores address of the CryptoBears contract instantiating this contract. */
   address public _CryptoBearsContract;
 
+  /* Stores address of a minter address if one is added. */
+  address public _minter;
+
   constructor() {
     _CryptoBearsContract = msg.sender;
   }
@@ -33,12 +36,27 @@ contract BearBucks is ERC20 {
   }
 
   /**
+   * Modifier that ensures msg.sender is the CryptoBears contract that
+   * instantiated this contract or the minter account.
+   */
+  modifier onlyMinterOrCryptoBearsContract() {
+    require(msg.sender == _CryptoBearsContract || msg.sender == _minter,
+      "msg.sender is not cryptoBears contract or minter account.");
+    _;
+  }
+
+  /*TODO: add header */
+  function setMinter(address newMinter) onlyCryptoBearsContract {
+    _minter = newMinter;
+  }
+
+  /**
    * Calls the internal _mint function inherited from our ERC20 implementation,
    * but adds check to ensure only the CryptoBears contract can mint BearBucks.
    * @param to The address to mint BearBucks to.
    * @param amount A uint256 representing the quantity of BearBucks to mint.
    */
-  function mint(address to, uint256 amount) onlyCryptoBearsContract {
+  function mint(address to, uint256 amount) onlyMinterOrCryptoBearsContract {
     _mint(to, amount);
   }
 
