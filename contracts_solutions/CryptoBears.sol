@@ -23,15 +23,15 @@ contract CryptoBears is ERC721 {
     string name;
   }
 
-  uint _startBalance;
-  uint _feedingCost;
-  uint _feedingInterval;
+  uint public _startBalance;
+  uint public _feedingCost;
+  uint public _feedingInterval;
 
   BearBucks public _BearBucksContract;
   address public _manager;
 
-  mapping(uint256 => mapping(uint256 => uint256)) _bets;
-  Bear[] _bears;
+  mapping(uint256 => mapping(uint256 => uint256)) internal _bets;
+  Bear[] internal _bears;
 
   constructor(
     uint startBalance,
@@ -250,12 +250,7 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  //NOTE: bearBucks don't transfer along with bears. Change this in part 2?
-
-  //Vulnerabilioty w multiple competing allowances?
-
-  /*TODO: deal with vulnerabilities*/
-  /*TODO: add check for approve vulnerability in ERC20*/
   /*TODO: Part 2 */
-
+  /*TODO: Make stencil */
+  /*TODO: update handout */
 }

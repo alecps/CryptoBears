@@ -22,7 +22,6 @@ contract('BearBucksPositiveTests', async function (accounts) {
     await checkState([bearBucks], [[]], accounts)
   })
 
-  /* NOTE: This test gives away part of the solution. Have students fill in? */
   it('should placeBet in BearBucks contract', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[5], amount, {from: accounts[0]})
@@ -37,7 +36,6 @@ contract('BearBucksPositiveTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  /* NOTE: This test gives away part of the solution. Have students fill in? */
   it('should removeBet in BearBucks contract', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[5], amount, {from: accounts[0]})

@@ -1,4 +1,4 @@
-var CryptoBears = artifacts.require("CryptoBears")
+const CryptoBears = artifacts.require("CryptoBears")
 
 const startBalance = 100
 const feedingCost = 20

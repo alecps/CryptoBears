@@ -48,7 +48,6 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  /*NOTE: This test gives away part of the solution*/
   it('should fail to placeBet greater than balance', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[5], amount+1, {from: accounts[0]})
@@ -62,7 +61,6 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  /*NOTE: This test gives away part of the solution*/
   it('should fail to placeBet if allowance of CryptoBearsContract is less than betSum', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[5], amount-1, {from: accounts[0]})
@@ -106,7 +104,6 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await checkState([bearBucks], [stateChanges], accounts)
   })
 
-  /*NOTE: This test gives away part of the solution*/
   it('should fail to approve amount less than betSum for CryptoBearsContract', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await bearBucks.approve(accounts[5], amount, {from: accounts[0]})
