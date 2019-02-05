@@ -181,25 +181,9 @@ contract CryptoBears is ERC721 {
    * @param amount The number of BearBucks to spend feeding the bear.
    */
   function feed(uint256 bearID, uint256 amount) public exists(bearID) {
-    /*Begin Solution*/
-    require(msg.sender == ownerOf(bearID));
-    require(amount >= _feedingCost);
-    require(_BearBucksContract.freeBalance(msg.sender) >= amount);
 
-    uint256 mealsNeeded = getMealsNeeded(bearID);
-    if (mealsNeeded > 0) {
-      uint256 mealsFed = amount.div(_feedingCost);
-      if (mealsFed > mealsNeeded) {
-        mealsFed = mealsNeeded;
-      }
-      _BearBucksContract.burn(msg.sender, mealsFed.mul(_feedingCost));
-      /*Have students choose and explain keyword choice.*/
-      /* We use storage here because we wish to modify the state of the bear. */
-      Bear storage bear = _bears[bearID];
-      bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
-      emit bearFed(bearID, bear.timeLastFed);
-    }
-    /*End Solution*/
+    /*TODO*/
+
   }
 
   /**
@@ -211,16 +195,9 @@ contract CryptoBears is ERC721 {
   function placeBet(uint256 bearID, uint256 opponentID, uint256 amount)
     public exists(bearID) exists(opponentID) notHungry(bearID)
   {
-    /*Begin Solution*/
-    require(msg.sender == ownerOf(bearID));
-    require(amount > 0);
-    require(_bets[bearID][opponentID] == 0);
 
-    _BearBucksContract.placeBet(ownerOf(bearID), amount);
-    _bets[bearID][opponentID] = amount;
+    /*TODO*/
 
-    emit betPlaced(bearID, opponentID, amount);
-    /*End Solution*/
   }
 
   /**
@@ -229,15 +206,9 @@ contract CryptoBears is ERC721 {
    * @param opponentID The unique ID of the bear the bet was against.
    */
   function removeBet(uint256 bearID, uint256 opponentID) public {
-    /*Begin Solution*/
-    require(msg.sender == ownerOf(bearID));
-    require(_bets[bearID][opponentID] > 0);
 
-    _BearBucksContract.removeBet(ownerOf(bearID), _bets[bearID][opponentID]);
-    _bets[bearID][opponentID] = 0;
+    /*TODO*/
 
-    emit betRemoved(bearID, opponentID);
-    /*End Solution*/
   }
 
   /**
@@ -264,18 +235,9 @@ contract CryptoBears is ERC721 {
    * @param loser The unique ID of the bear who lost the bet.
    */
   function payWinner(uint256 winner, uint256 loser) public onlyReferee {
-    /*Begin Solution*/
-    require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
 
-    _BearBucksContract.transferFrom(
-      ownerOf(loser), ownerOf(winner), _bets[loser][winner]
-    );
-    _BearBucksContract.removeBet(ownerOf(winner), _bets[winner][loser]);
-    _bets[winner][loser] = 0;
-    _BearBucksContract.removeBet(ownerOf(loser), _bets[loser][winner]);
-    _bets[loser][winner] = 0;
-    emit betSettled(winner, loser);
-    /*End Solution*/
+    /*TODO*/
+
   }
-  
+
 }
