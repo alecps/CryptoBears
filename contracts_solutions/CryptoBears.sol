@@ -93,7 +93,8 @@ contract CryptoBears is ERC721 {
     public onlyMinter returns(uint256)
   {
 
-    /*Have students choose and explain keyword choice.*/
+    /* Begin Solution. */
+    // Have students explain use of memory keyword here.
     /**
      * We use the memory keyword here because we are creating a new instance of
      * the Bear struct, and the contract's storage hasn't allocated space for it
@@ -104,6 +105,7 @@ contract CryptoBears is ERC721 {
      * array of Bear structs, so when we push our new Bear onto the _bears array
      * it is copied safely from memory to storage.
      */
+    /* End Solution. */
     Bear memory bear = Bear({
       timeOfBirth: now,
       genes: genes,
@@ -151,11 +153,13 @@ contract CryptoBears is ERC721 {
   function getMealsNeeded(uint256 bearID)
     public exists(bearID) view returns(uint256)
   {
-    /*Have students choose and explain keyword choice.*/
+    /* Begin Solution. */
+    // Have students explain use of storage keyword here.
     /**
     * We use storage here because we don't want to waste gas copying from
     * storage to memory.
     */
+    /* End Solution. */
     Bear storage bear = _bears[bearID];
     uint256 timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
@@ -177,6 +181,10 @@ contract CryptoBears is ERC721 {
    * the owner's account, updating timeLastFed, and emitting a bearFed event.
    * If the passed amount of BearBucks is more than is necessary to feed the
    * bear, then only the necessary amount is burned.
+   *
+   * If you use either the memory or storage keyword here, remember to explain
+   * why.
+   *
    * @param bearID The unique ID of the bear we are feeding.
    * @param amount The number of BearBucks to spend feeding the bear.
    */
@@ -193,7 +201,6 @@ contract CryptoBears is ERC721 {
         mealsFed = mealsNeeded;
       }
       _BearBucksContract.burn(msg.sender, mealsFed.mul(_feedingCost));
-      /*Have students choose and explain keyword choice.*/
       /* We use storage here because we wish to modify the state of the bear. */
       Bear storage bear = _bears[bearID];
       bear.timeLastFed = bear.timeLastFed.add(mealsFed.mul(_feedingInterval));
@@ -277,5 +284,5 @@ contract CryptoBears is ERC721 {
     emit betSettled(winner, loser);
     /*End Solution*/
   }
-  
+
 }

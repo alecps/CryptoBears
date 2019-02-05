@@ -93,16 +93,9 @@ contract CryptoBears is ERC721 {
     public onlyMinter returns(uint256)
   {
 
-    /*Have students choose and explain keyword choice.*/
     /**
-     * We use the memory keyword here because we are creating a new instance of
-     * the Bear struct, and the contract's storage hasn't allocated space for it
-     * yet. If we were to use the storage keyword instead, the compiler would
-     * throw an error. If it did not throw an error, we would be overriding
-     * data in storage with our new Bear instance, which could cause unintended
-     * results. The contract's storage has, however, allocated space for an
-     * array of Bear structs, so when we push our new Bear onto the _bears array
-     * it is copied safely from memory to storage.
+     * TODO: Explain why we use the memory keyword here. Saying 'because it
+     * won't compile otherwise' is not enough.
      */
     Bear memory bear = Bear({
       timeOfBirth: now,
@@ -151,11 +144,10 @@ contract CryptoBears is ERC721 {
   function getMealsNeeded(uint256 bearID)
     public exists(bearID) view returns(uint256)
   {
-    /*Have students choose and explain keyword choice.*/
     /**
-    * We use storage here because we don't want to waste gas copying from
-    * storage to memory.
-    */
+     * TODO: Explain why we use the memory keyword here. Saying 'because it
+     * won't compile otherwise' is not enough.
+     */
     Bear storage bear = _bears[bearID];
     uint256 timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
@@ -177,6 +169,10 @@ contract CryptoBears is ERC721 {
    * the owner's account, updating timeLastFed, and emitting a bearFed event.
    * If the passed amount of BearBucks is more than is necessary to feed the
    * bear, then only the necessary amount is burned.
+   *
+   * If you use either the memory or storage keyword here, remember to explain
+   * why.
+   * 
    * @param bearID The unique ID of the bear we are feeding.
    * @param amount The number of BearBucks to spend feeding the bear.
    */
