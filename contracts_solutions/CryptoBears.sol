@@ -4,9 +4,9 @@ import "./Tokens/ERC721.sol";
 import "./BearBucks.sol";
 
 /**
- * This contract inherits from ERC721 and implements the feeding and gambling
- * functionality of our DApp. A designated manager address can use this contract
- * to create new CryptoBears.
+ * This contract inherits from ERC721 and implements the feeding and
+ * gambling functionality of our DApp. A designated manager address can use
+ * this contract to create new CryptoBears.
  */
 contract CryptoBears is ERC721 {
   string public constant contractName = 'CryptoBears'; // For testing.
@@ -39,7 +39,7 @@ contract CryptoBears is ERC721 {
     uint256 feedingCost,
     uint256 feedingInterval,
     address referee
-  ) {
+  ) public {
     //This contract deploys its own instance of the BearBucks contract.
     _BearBucksContract = new BearBucks();
     _startBalance = startBalance;
@@ -69,17 +69,20 @@ contract CryptoBears is ERC721 {
     _;
   }
 
-  /*TODO: add header */
-  function setMinter(address newMinter) onlyMinter {
-    //TODO: add checks?
+  /**
+   * Updates the minter address.
+   * @param newMinter The address of the new minter.
+   */
+  function setMinter(address newMinter) public onlyMinter {
+    require(newMinter != address(0));
     _minter = newMinter;
     _BearBucksContract.setMinter(newMinter);
   }
 
   /**
-   * Creates a new CryptoBear token and generates a unique bearID for it. Mints
-   * _startBalance BearBucks to the owner of the new bear. This function can
-   * only be called by the designated manager address.
+   * Creates a new CryptoBear token and generates a unique bearID for it.
+   * Mints _startBalance BearBucks to the owner of the new bear. This
+   * function can only be called by the designated manager address.
    * @param genes A uint256 that encodes the properties of the new bear.
    * @param owner The address that will own the new bear.
    * @param name A string representing the name of the bear.
@@ -87,7 +90,7 @@ contract CryptoBears is ERC721 {
    *
    */
   function newBear(uint256 genes, address owner, string name)
-    onlyMinter returns(uint256)
+    public onlyMinter returns(uint256)
   {
 
     /*Have students choose and explain keyword choice.*/
@@ -117,7 +120,7 @@ contract CryptoBears is ERC721 {
   /**
    * @return The total number of CryptoBears in existence.
    */
-  function getNumBears() view returns(uint256) {
+  function getNumBears() public view returns(uint256) {
     return _bears.length;
   }
 
@@ -126,8 +129,9 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the given bear's time of birth.
    */
   function getTimeOfBirth(uint256 bearID)
-    external exists(bearID) view returns(uint256) {
-      return _bears[bearID].timeOfBirth;
+    external exists(bearID) view returns(uint256)
+  {
+    return _bears[bearID].timeOfBirth;
   }
 
   /**
@@ -135,8 +139,9 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the given bear's time last fed.
    */
   function getTimeLastFed(uint256 bearID)
-    external exists(bearID) view returns(uint256) {
-      return _bears[bearID].timeLastFed;
+    external exists(bearID) view returns(uint256)
+  {
+    return _bears[bearID].timeLastFed;
   }
 
   /**
@@ -144,13 +149,13 @@ contract CryptoBears is ERC721 {
    * @return A uint256 representing the meals needed by the given bear.
    */
   function getMealsNeeded(uint256 bearID)
-    exists(bearID) view returns(uint256)
+    public exists(bearID) view returns(uint256)
   {
     /*Have students choose and explain keyword choice.*/
     /**
-     * We use storage here because we don't want to waste gas copying from
-     * storage to memory.
-     */
+    * We use storage here because we don't want to waste gas copying from
+    * storage to memory.
+    */
     Bear storage bear = _bears[bearID];
     uint256 timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);
@@ -161,7 +166,9 @@ contract CryptoBears is ERC721 {
    * @param opponentID The unique ID of the bear who the bet is against.
    * @return The size of the bet.
    */
-  function getBet(uint256 bearID, uint256 opponentID) view returns(uint256) {
+  function getBet(uint256 bearID, uint256 opponentID)
+    public view returns(uint256)
+  {
     return _bets[bearID][opponentID];
   }
 
@@ -173,7 +180,7 @@ contract CryptoBears is ERC721 {
    * @param bearID The unique ID of the bear we are feeding.
    * @param amount The number of BearBucks to spend feeding the bear.
    */
-  function feed(uint256 bearID, uint256 amount) exists(bearID) {
+  function feed(uint256 bearID, uint256 amount) public exists(bearID) {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
     require(amount >= _feedingCost);
@@ -202,7 +209,7 @@ contract CryptoBears is ERC721 {
    * @param amount The size of the bet.
    */
   function placeBet(uint256 bearID, uint256 opponentID, uint256 amount)
-    exists(bearID) exists(opponentID) notHungry(bearID)
+    public exists(bearID) exists(opponentID) notHungry(bearID)
   {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
@@ -221,7 +228,7 @@ contract CryptoBears is ERC721 {
    * @param bearID The unique ID of the bear whose bet is being removed.
    * @param opponentID The unique ID of the bear the bet was against.
    */
-  function removeBet(uint256 bearID, uint256 opponentID) {
+  function removeBet(uint256 bearID, uint256 opponentID) public {
     /*Begin Solution*/
     require(msg.sender == ownerOf(bearID));
     require(_bets[bearID][opponentID] > 0);
@@ -232,8 +239,6 @@ contract CryptoBears is ERC721 {
     emit betRemoved(bearID, opponentID);
     /*End Solution*/
   }
-
-  /*NOTE: Race condition vulnerability. Remove bet when this transaction is posted */
 
   /**
    * Transfers award from the loser to the winner, removes bets in BearBucks
@@ -246,10 +251,19 @@ contract CryptoBears is ERC721 {
    * contracts, check out this article.
    * https://blog.positive.com/predicting-random-numbers-in-ethereum-smart-contracts-e5358c6b8620
    *
+   * Note that there is technically a vulnerability with this implementation.
+   * As with approve(...) in ERC20.sol, it would be possible to listen
+   * for transactions that call this function and call removeBet(...) if
+   * you see you've lost the bet. This would set up a race condition where,
+   * if you were lucky, nodes might confirm your transaction before the
+   * call to payWinner(...). This type of attack is called 'front-running'
+   * and it is a problem in many smart contracts. Such attacks, however,
+   * are difficult to execute and often not worth worrying about.
+   *
    * @param winner The unique ID of the bear who won the bet.
    * @param loser The unique ID of the bear who lost the bet.
    */
-  function payWinner(uint256 winner, uint256 loser) onlyReferee {
+  function payWinner(uint256 winner, uint256 loser) public onlyReferee {
     /*Begin Solution*/
     require(_bets[winner][loser] > 0 && _bets[loser][winner] > 0);
 
@@ -264,13 +278,7 @@ contract CryptoBears is ERC721 {
     /*End Solution*/
   }
 
-  /*TODO: Write Crowdsale tests */
-  /*TODO: update tests for minter roles */
   /*TODO: get rid of comments */
   /*TODO: Make stencil / proof-read comments */
-  /*TODO: make uint256 consistent*/
-  /*TODO: get rid of compilation errors */
   /*TODO: rename repository */
-  /*TODO: update handout */
-
 }

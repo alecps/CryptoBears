@@ -21,7 +21,7 @@ contract BearBucks is ERC20 {
   /* Stores address of a minter address if one is added. */
   address public _minter;
 
-  constructor() {
+  constructor() public {
     _CryptoBearsContract = msg.sender;
   }
 
@@ -45,8 +45,11 @@ contract BearBucks is ERC20 {
     _;
   }
 
-  /*TODO: add header */
-  function setMinter(address newMinter) onlyCryptoBearsContract {
+  /**
+   * Updates the minter address.
+   * @param newMinter The address of the new minter.
+   */
+  function setMinter(address newMinter) public onlyCryptoBearsContract {
     _minter = newMinter;
   }
 
@@ -56,7 +59,10 @@ contract BearBucks is ERC20 {
    * @param to The address to mint BearBucks to.
    * @param amount A uint256 representing the quantity of BearBucks to mint.
    */
-  function mint(address to, uint256 amount) onlyMinterOrCryptoBearsContract {
+  function mint(
+    address to,
+    uint256 amount
+  ) public onlyMinterOrCryptoBearsContract {
     _mint(to, amount);
   }
 
@@ -66,7 +72,7 @@ contract BearBucks is ERC20 {
    * @param from The address whose BearBucks we are burning.
    * @param amount A uint256 representing the quantity of BearBucks to burn.
    */
-  function burn(address from, uint256 amount) onlyCryptoBearsContract {
+  function burn(address from, uint256 amount) public onlyCryptoBearsContract {
     _burn(from, amount);
   }
 
@@ -75,7 +81,7 @@ contract BearBucks is ERC20 {
    * @param owner The address whose active bets we are summing.
    * @return The total number of BearBucks owner is currently betting.
    */
-  function betSum(address owner) view returns(uint256) {
+  function betSum(address owner) public view returns(uint256) {
     /*Begin Solution*/
     return _betSum[owner];
     /*End Solution*/
@@ -86,7 +92,7 @@ contract BearBucks is ERC20 {
    * @param owner The address whose free (not-in-bet) balance we are querying.
    * @return The balance of owner minus the betSum of owner.
    */
-  function freeBalance(address owner) view returns(uint256) {
+  function freeBalance(address owner) public view returns(uint256) {
     return balanceOf(owner).sub(_betSum[owner]);
   }
   /*End Solution*/
@@ -96,10 +102,15 @@ contract BearBucks is ERC20 {
    * @param owner The address for which the bet is being placed.
    * @param amount The number of BearBucks being bet as a uint256.
    */
-  function placeBet(address owner, uint256 amount) onlyCryptoBearsContract {
+  function placeBet(
+    address owner,
+    uint256 amount
+  ) public onlyCryptoBearsContract {
     /*Begin Solution*/
     require(freeBalance(owner) >= amount);
-    require(allowance(owner, _CryptoBearsContract) >= _betSum[owner].add(amount));
+    require(
+      allowance(owner, _CryptoBearsContract) >= _betSum[owner].add(amount)
+    );
     _betSum[owner] = _betSum[owner].add(amount);
     /*End Solution*/
   }
@@ -109,7 +120,10 @@ contract BearBucks is ERC20 {
    * @param owner The address whose bet is being removed.
    * @param amount The number of BearBucks no longer being bet.
    */
-  function removeBet(address owner, uint256 amount) onlyCryptoBearsContract {
+  function removeBet(
+    address owner,
+    uint256 amount
+  ) public onlyCryptoBearsContract {
     /*Begin Solution*/
     _betSum[owner] = _betSum[owner].sub(amount);
     /*End Solution*/
@@ -122,9 +136,10 @@ contract BearBucks is ERC20 {
    * betSum. Without this check, users could prevent funds from being transfered
    * from them when they lose bets.
    */
-  function approve(address spender, uint256 value) returns (bool) {
+  function approve(address spender, uint256 value) public returns (bool) {
     if(spender == _CryptoBearsContract) {
-      require(value >= _betSum[msg.sender]); // This fixes testExample3 in TestVulnerabilities.sol
+      // This fixes 'test example 3' in VulnerabilityTests.js.
+      require(value >= _betSum[msg.sender]);
     }
     super.approve(spender, value);
   }

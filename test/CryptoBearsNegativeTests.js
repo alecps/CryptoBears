@@ -18,7 +18,7 @@ const name = 'Bruno'
 contract('CryptoBearsNegativeTests', async function (accounts) {
 
   beforeEach('Make fresh contract', async function () {
-    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the manager
+    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the referee/minter.
       startBalance, feedingCost, feedingInterval/1000, accounts[5])
     // .at(...) gets contract instance at the passed address.
     bearBucks = BearBucks.at(await cryptoBears._BearBucksContract.call())
@@ -28,7 +28,7 @@ contract('CryptoBearsNegativeTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [[], []], accounts)
   })
 
-  it('should fail to create newBear if msg.sender is not manager', async function () {
+  it('should fail to create newBear if msg.sender is not minter', async function () {
     await expectRevert(cryptoBears.newBear(genes, accounts[0], name, {from: accounts[6]}))
     await checkState([cryptoBears, bearBucks], [[], []], accounts)
   })
@@ -374,7 +374,7 @@ contract('CryptoBearsNegativeTests', async function (accounts) {
     await checkState([cryptoBears, bearBucks], [cryptoBearsStateChanges, bearBucksStateChanges], accounts)
   })
 
-  it('should fail to payWinner if msg.sender is not manager', async function () {
+  it('should fail to payWinner if msg.sender is not referee', async function () {
     var bear1 = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bear1, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
