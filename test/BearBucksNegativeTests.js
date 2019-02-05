@@ -19,12 +19,12 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await checkState([bearBucks], [[]], accounts)
   })
 
-  it('should fail to mint if not CryptoBearsContract', async function () {
+  it('should fail to mint if not minter or CryptoBearsContract', async function () {
     await expectRevert(bearBucks.mint(accounts[0], amount, {from: accounts[2]}))
     await checkState([bearBucks], [[]], accounts)
   })
 
-  it('should fail to burn if not CryptoBearsContract', async function () {
+  it('should fail to burn if not minter or CryptoBearsContract', async function () {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.burn(accounts[0], amount, {from: accounts[2]}))
 

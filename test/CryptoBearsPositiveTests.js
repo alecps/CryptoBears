@@ -19,7 +19,7 @@ const name = 'Bruno'
 contract('CryptoBearsPositiveTests', async function (accounts) {
 
   beforeEach('Make fresh contract', async function () {
-    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the manager
+    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the referee/minter.
       startBalance, feedingCost, feedingInterval/1000, accounts[5])
     bearBucks = BearBucks.at(await cryptoBears._BearBucksContract.call())
   })

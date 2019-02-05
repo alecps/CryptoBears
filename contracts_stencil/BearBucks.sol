@@ -11,10 +11,6 @@ import "./Tokens/ERC20.sol";
 contract BearBucks is ERC20 {
   string public constant contractName = 'BearBucks'; // For testing.
 
-  /*Begin Solution*/
-  mapping(address => uint256) private _betSum;
-  /*End Solution*/
-
   /* Stores address of the CryptoBears contract instantiating this contract. */
   address public _CryptoBearsContract;
 
@@ -82,20 +78,10 @@ contract BearBucks is ERC20 {
    * @return The total number of BearBucks owner is currently betting.
    */
   function betSum(address owner) public view returns(uint256) {
-    /*Begin Solution*/
-    return _betSum[owner];
-    /*End Solution*/
-  }
 
-  /*Begin Solution*/
-  /**
-   * @param owner The address whose free (not-in-bet) balance we are querying.
-   * @return The balance of owner minus the betSum of owner.
-   */
-  function freeBalance(address owner) public view returns(uint256) {
-    return balanceOf(owner).sub(_betSum[owner]);
+    /*TODO*/
+
   }
-  /*End Solution*/
 
   /**
    * Adds to the sum of active bets placed by the given address.
@@ -106,13 +92,9 @@ contract BearBucks is ERC20 {
     address owner,
     uint256 amount
   ) public onlyCryptoBearsContract {
-    /*Begin Solution*/
-    require(freeBalance(owner) >= amount);
-    require(
-      allowance(owner, _CryptoBearsContract) >= _betSum[owner].add(amount)
-    );
-    _betSum[owner] = _betSum[owner].add(amount);
-    /*End Solution*/
+
+    /*TODO*/
+
   }
 
   /**
@@ -124,25 +106,9 @@ contract BearBucks is ERC20 {
     address owner,
     uint256 amount
   ) public onlyCryptoBearsContract {
-    /*Begin Solution*/
-    _betSum[owner] = _betSum[owner].sub(amount);
-    /*End Solution*/
-  }
 
-  /*Begin Solution*/
-  /**
-   * Overrides approve(...) from ERC20 contract, adding a check to prevent
-   * users from decreasing the allowance of the CryptoBears contract below their
-   * betSum. Without this check, users could prevent funds from being transfered
-   * from them when they lose bets.
-   */
-  function approve(address spender, uint256 value) public returns (bool) {
-    if(spender == _CryptoBearsContract) {
-      // This fixes 'test example 3' in VulnerabilityTests.js.
-      require(value >= _betSum[msg.sender]);
-    }
-    super.approve(spender, value);
+    /*TODO*/
+
   }
-  /*End Solution*/
 
 }

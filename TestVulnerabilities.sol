@@ -29,7 +29,7 @@ contract TestVulnerabilities {
     bear0 = cb.newBear(0, this, 'Bruno');
     bear1 = cb.newBear(0, account_1, 'Pooh');
     bear2 = cb.newBear(0, account_2, 'Paddington');
-    bear3 = cb.newBear(0, account_3, 'Ted');
+    //bear3 = cb.newBear(0, account_3, 'Ted');
   }
 
   /* Add tests below here. */
@@ -66,27 +66,27 @@ contract TestVulnerabilities {
     account_1.bb_approve(cb, 0);
   }
 
-  /* Find more vulnerabilities! */
+  // /* Find more vulnerabilities! */
+  //
+  // /* Begin Solution */
+  // function testAllowanceVulnerability() {
+  //   // Place bet.
+  //   bb.approve(cb, startBalance);
+  //   cb.placeBet(bear0, bear1, startBalance);
+  //
+  //   // Approve another account to spend on your behalf.
+  //   bb.approve(account_2, startBalance);
+  //   // Have that account transfer your funds to themselves.
+  //   account_2.bb_transferFrom(this, account_2, startBalance);
+  //
+  //   // Is your betSum greater than your balance?
+  //   Assert.isBelow(bb.betSum(this), bb.balanceOf(this), "Error: BetSum is greater than balance!");
+  //
+  //   // Reset state.
+  //   cb.removeBet(bear0, bear1);
+  //   bb.approve(cb, 0);
+  //   account_2.bb_transfer(this, startBalance);
+  // }
+  // /* End Solution */
 
-  /* Begin Solution */
-  function testAllowanceVulnerability() {
-    // Place bet.
-    bb.approve(cb, startBalance);
-    cb.placeBet(bear0, bear1, startBalance);
-
-    // Approve another account to spend on your behalf.
-    bb.approve(account_2, startBalance);
-    // Have that account transfer your funds to themselves.
-    account_2.bb_transferFrom(this, account_2, startBalance);
-
-    // Is your betSum greater than your balance?
-    Assert.isBelow(bb.betSum(this), bb.balanceOf(this), "Error: BetSum is greater than balance!");
-
-    // Reset state.
-    cb.removeBet(bear0, bear1);
-    bb.approve(cb, 0);
-    account_2.bb_transfer(this, startBalance);
-  }
-  /* End Solution */
-
-}
+ }

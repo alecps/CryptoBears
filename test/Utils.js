@@ -1,5 +1,7 @@
 const CryptoBears = artifacts.require('CryptoBears')
 const BearBucks = artifacts.require('BearBucks')
+const BearCrowdsale = artifacts.require('BearCrowdsale')
+const ReentrancyExploit = artifacts.require('ReentrancyExploit')
 
 const assertDiff = require('assert-diff')
 assertDiff.options.strict = true
@@ -11,6 +13,8 @@ const mapValuesDeep = (v, callback) => (
     : callback(v)
 )
 const zero = "0x0000000000000000000000000000000000000000"
+
+var accountBalances = {}
 
 // Checks whether an event was properly emmitted.
 async function checkEvent(type, event, params) {
@@ -36,32 +40,40 @@ async function checkState(_tokens, _stateChanges, _accounts) {
     var name = await token.contractName.call()
     var _expectedState = await expectedState(token, stateChanges, _accounts, name)
     var _actualState = await actualState(token, _expectedState, _accounts, name)
-    assertDiff.deepEqual(_actualState, _expectedState, "difference between expected and actual state")
-    await checkBalancesSumToTotalSupply(token, _accounts, name)
+    assertDiff.deepEqual(_actualState, _expectedState,
+      "difference between expected and actual state")
+    if (name != 'BearCrowdsale') {
+      await checkBalancesSumToTotalSupply(token, _accounts, name)
+    }
   }
 }
 
 // Builds expected state of contract using custom variables specified in test.
 async function expectedState(token, stateChanges, accounts, name) {
-  var name = await token.contractName.call()
   switch (name) {
     case 'BearBucks':
     var state = {
       'totalSupply': 0,
-      'balanceOf': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
+      'balanceOf': {
+        'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'a5': 0, 'a6': 0, 'a7': 0
+      },
       'allowance': {
-        'a0': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
+        'a0': {
+          'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
         'a1': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
         'a2': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
         'a3': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
         'a4': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'cb': 0},
       },
       'betSum': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
+      'minter': zero
     }
     break
     case 'CryptoBears':
     var state = {
-      'balanceOf': {'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0},
+      'balanceOf': {
+        'a0': 0, 'a1': 0, 'a2': 0, 'a3': 0, 'a4': 0, 'a5': 0, 'a6': 0, 'a7': 0
+      },
       'ownerOf': {'b0': zero, 'b1': zero, 'b2': zero, 'b3': zero, 'b4': zero},
       'getApproved': {'b0': zero, 'b1': zero, 'b2': zero, 'b3': zero, 'b4': zero},
       'isApprovedForAll': {
@@ -84,7 +96,14 @@ async function expectedState(token, stateChanges, accounts, name) {
         'b2': await getTimeOfBirthOrZero(token, 2),
         'b3': await getTimeOfBirthOrZero(token, 3),
         'b4': await getTimeOfBirthOrZero(token, 4),
-      }
+      },
+      'minter': await token._referee.call(),
+    }
+    break
+    case 'BearCrowdsale':
+    var state = {
+      'weiRaised': 0,
+      'wei_balance': accountBalances,
     }
     break
     default:
@@ -125,6 +144,9 @@ async function actualState(token, state, accounts, name) {
       (await token.balanceOf.call(accounts[2])).toNumber(),
       (await token.balanceOf.call(accounts[3])).toNumber(),
       (await token.balanceOf.call(accounts[4])).toNumber(),
+      (await token.balanceOf.call(accounts[5])).toNumber(),
+      (await token.balanceOf.call(accounts[6])).toNumber(),
+      (await token.balanceOf.call(accounts[7])).toNumber(),
       (await token.allowance.call(accounts[0], accounts[0])).toNumber(),
       (await token.allowance.call(accounts[0], accounts[1])).toNumber(),
       (await token.allowance.call(accounts[0], accounts[2])).toNumber(),
@@ -160,6 +182,7 @@ async function actualState(token, state, accounts, name) {
       (await token.betSum.call(accounts[2])).toNumber(),
       (await token.betSum.call(accounts[3])).toNumber(),
       (await token.betSum.call(accounts[4])).toNumber(),
+      await token._minter.call(),
     ]
     break
     case 'CryptoBears':
@@ -169,6 +192,9 @@ async function actualState(token, state, accounts, name) {
       (await token.balanceOf.call(accounts[2])).toNumber(),
       (await token.balanceOf.call(accounts[3])).toNumber(),
       (await token.balanceOf.call(accounts[4])).toNumber(),
+      (await token.balanceOf.call(accounts[5])).toNumber(),
+      (await token.balanceOf.call(accounts[6])).toNumber(),
+      (await token.balanceOf.call(accounts[7])).toNumber(),
       await token.ownerOf.call(0),
       await token.ownerOf.call(1),
       await token.ownerOf.call(2),
@@ -234,6 +260,22 @@ async function actualState(token, state, accounts, name) {
       await getTimeLastFedOrZero(token, 2),
       await getTimeLastFedOrZero(token, 3),
       await getTimeLastFedOrZero(token, 4),
+      await token._minter.call(),
+    ]
+    break
+    case 'BearCrowdsale':
+    var values = [
+      (await token._weiRaised.call()).toNumber(),
+      (await web3.eth.getBalance(accounts[0])).toNumber(),
+      (await web3.eth.getBalance(accounts[1])).toNumber(),
+      (await web3.eth.getBalance(accounts[2])).toNumber(),
+      (await web3.eth.getBalance(accounts[3])).toNumber(),
+      (await web3.eth.getBalance(accounts[4])).toNumber(),
+      (await web3.eth.getBalance(accounts[5])).toNumber(),
+      (await web3.eth.getBalance(accounts[6])).toNumber(),
+      (await web3.eth.getBalance(accounts[7])).toNumber(),
+      (await web3.eth.getBalance(accounts[8])).toNumber(),
+      (await web3.eth.getBalance(accounts[9])).toNumber(),
     ]
     break
     default:
@@ -277,28 +319,49 @@ async function checkBalancesSumToTotalSupply(token, accounts, name) {
 
 // Used for negative tests.
 async function expectRevert(contractPromise) {
-    try {
-        await contractPromise;
-    } catch (error) {
-        assert(
-            error.message.search('revert') >= 0,
-            'Expected error of type revert, got \'' + error + '\' instead',
-        );
-        return;
-    }
-    assert.fail('Expected error of type revert, but no error was received');
+  try {
+    await contractPromise;
+  } catch (error) {
+    assert(
+      error.message.search('revert') >= 0,
+      'Expected error of type revert, got \'' + error + '\' instead',
+    );
+    return;
+  }
+  assert.fail('Expected error of type revert, but no error was received');
+}
+
+function getExpectedBalanceDelta(gas_used, wei_used) {
+  return gas_used.times(new BigNumber(100000000000)).plus((new BigNumber(wei_used)))
 }
 
 // Waits the specified number of ms before continuing test execution.
 function pause(ms) { return new Promise(resolve => { setTimeout(resolve, ms)}) }
 
+async function updateBalances(accounts) {
+  for (var i = 0; i < accounts.length; i++) {
+    let key = 'a' + i.toString()
+    let val = (await web3.eth.getBalance(accounts[i])).toNumber()
+    accountBalances[key] = val
+  }
+}
+
+async function getGasUsed() {
+  return (await web3.eth.getBlock('latest')).gasUsed * 100000000000
+}
+
 
 module.exports = {
   CryptoBears: CryptoBears,
   BearBucks: BearBucks,
+  BearCrowdsale: BearCrowdsale,
   checkState: checkState,
   expectRevert: expectRevert,
   zero: zero,
   pause: pause,
   checkEvent: checkEvent,
+  getExpectedBalanceDelta: getExpectedBalanceDelta,
+  ReentrancyExploit: ReentrancyExploit,
+  updateBalances: updateBalances,
+  getGasUsed: getGasUsed,
 }
