@@ -5,8 +5,10 @@ import "./BearBucks.sol";
 
 /**
  * This contract inherits from ERC721 and implements the feeding and
- * gambling functionality of our DApp. A designated manager address can use
- * this contract to create new CryptoBears.
+ * gambling functionality of our DApp. A designated minter address can use
+ * this contract to create new CryptoBears. The referee address decides who
+ * wins each bet. Initially, these two addresses are the same but the _minter
+ * address can be updated via the setMinter(...) function.
  */
 contract CryptoBears is ERC721 {
   string public constant contractName = 'CryptoBears'; // For testing.
@@ -80,9 +82,9 @@ contract CryptoBears is ERC721 {
   }
 
   /**
-   * Creates a new CryptoBear token and generates a unique bearID for it.
+   * Mints a new CryptoBear token and generates a unique bearID for it.
    * Mints _startBalance BearBucks to the owner of the new bear. This
-   * function can only be called by the designated manager address.
+   * function can only be called by the designated minter address.
    * @param genes A uint256 that encodes the properties of the new bear.
    * @param owner The address that will own the new bear.
    * @param name A string representing the name of the bear.
@@ -251,8 +253,8 @@ contract CryptoBears is ERC721 {
    * Transfers award from the loser to the winner, removes bets in BearBucks
    * contract, updates _bets, emits betSettled event.
    *
-   * This function is called by the manager account, which is controlled
-   * off-chain. We keep the manager code off-chain because the Ethereum
+   * This function is called by the referee account, which is controlled
+   * off-chain. We keep the referee code off-chain because the Ethereum
    * blockchain is deterministic, which makes pseudo-random number generators
    * (PRNGs) tricky to implement. If you're curious about PRNGs in smart
    * contracts, check out this article.

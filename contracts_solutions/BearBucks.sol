@@ -6,7 +6,8 @@ import "./Tokens/ERC20.sol";
  * This contract is instantiated by the CryptoBears contract and inherits from
  * ERC20. It gives the CryptoBears contract the ability to mint/burn BearBucks
  * and keeps track of the total amount of BearBucks each player is actively
- * betting.
+ * betting. A minter address other than the CryptoBears contract can later be
+ * added with the setMinter(...) function.
  */
 contract BearBucks is ERC20 {
   string public constant contractName = 'BearBucks'; // For testing.
