@@ -27,7 +27,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
     await bearBucks.approve(accounts[5], amount, {from: accounts[0]})
     await bearBucks.placeBet(accounts[0], amount, {from: accounts[5]})
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount},
@@ -42,7 +42,7 @@ contract('BearBucksPositiveTests', async function (accounts) {
     await bearBucks.placeBet(accounts[0], amount, {from: accounts[5]})
     await bearBucks.removeBet(accounts[0], amount, {from: accounts[5]})
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount}

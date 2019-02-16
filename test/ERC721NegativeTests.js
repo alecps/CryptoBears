@@ -5,7 +5,7 @@ const CryptoBears = utils.CryptoBears
 const BearBucks = utils.BearBucks
 const checkState = utils.checkState
 const expectRevert = utils.expectRevert
-const zero = utils.zero
+const zero40 = utils.zero40
 const pause = utils.pause
 
 const startBalance = 100
@@ -18,7 +18,7 @@ const name = 'Bruno'
 contract('ERC721NegativeTests', async function (accounts) {
 
   beforeEach('Make fresh contract', async function () {
-    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the referee/minter.
+    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the minter.
       startBalance, feedingCost, feedingInterval/1000, accounts[5])
     bearBucks = BearBucks.at(await cryptoBears._BearBucksContract.call())
   })
@@ -35,11 +35,11 @@ contract('ERC721NegativeTests', async function (accounts) {
   it('should fail to approve owner', async function () {
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await expectRevert(cryptoBears.approve(accounts[0], 0, {from: accounts[0]}))
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]},
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
@@ -49,11 +49,11 @@ contract('ERC721NegativeTests', async function (accounts) {
   it('should fail to approve if msg.sender is not owner or approvedForAll', async function () {
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await expectRevert(cryptoBears.approve(accounts[1], 0, {from: accounts[2]}))
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]},
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
@@ -66,16 +66,16 @@ contract('ERC721NegativeTests', async function (accounts) {
   })
 
   it('should fail to transferFrom if msg.sender is not approved or owner', async function () {
-    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    let bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await expectRevert(cryptoBears.transferFrom(accounts[0], accounts[2], bearID, {from: accounts[3]}))
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
@@ -83,16 +83,16 @@ contract('ERC721NegativeTests', async function (accounts) {
   })
 
   it('should fail to transferFrom to address(0)', async function () {
-    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    let bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await expectRevert(cryptoBears.transferFrom(accounts[0], '0x0', bearID, {from: accounts[0]}))
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
@@ -100,16 +100,16 @@ contract('ERC721NegativeTests', async function (accounts) {
   })
 
   it('should fail to transferFrom when from is not owner', async function () {
-    var bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
+    let bearID = (await cryptoBears.newBear.call(genes, accounts[0], name, {from: accounts[5]})).toNumber()
     assert.equal(bearID, 0)
     await cryptoBears.newBear(genes, accounts[0], name, {from: accounts[5]})
     await expectRevert(cryptoBears.transferFrom(accounts[2], accounts[1], bearID, {from: accounts[0]}))
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]

@@ -22,7 +22,7 @@ contract('ERC20NegativeTests', async function (accounts) {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.approve('0x0', amount, {from: accounts[0]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount}
     ]
@@ -36,7 +36,7 @@ contract('ERC20NegativeTests', async function (accounts) {
       bearBucks.transferFrom(accounts[0], accounts[2], amount, {from: accounts[1]})
     )
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.a1', 'expect': amount-1}
@@ -51,7 +51,7 @@ contract('ERC20NegativeTests', async function (accounts) {
       bearBucks.transferFrom(accounts[0], accounts[2], amount+1, {from: accounts[1]})
     )
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.a1', 'expect': amount+1}
@@ -66,7 +66,7 @@ contract('ERC20NegativeTests', async function (accounts) {
       bearBucks.transferFrom(accounts[0], '0x0', amount, {from: accounts[1]})
     )
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.a1', 'expect': amount}
@@ -83,7 +83,7 @@ contract('ERC20NegativeTests', async function (accounts) {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.transfer('0x0', amount, {from: accounts[0]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
     ]
