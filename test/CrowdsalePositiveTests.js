@@ -22,7 +22,7 @@ const bearBucksPrice = Number(web3.toWei(.002, 'ether'))
 contract('CrowdsalePositiveTests', async function (accounts) {
 
   beforeEach('Make fresh contract', async function () {
-    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the referee.
+    cryptoBears = await CryptoBears.new(
       startBalance, feedingCost, feedingInterval/1000, accounts[5])
     bearBucks = BearBucks.at(await cryptoBears._BearBucksContract.call())
     crowdsale = await BearCrowdsale.new(
@@ -38,41 +38,41 @@ contract('CrowdsalePositiveTests', async function (accounts) {
   })
 
   it('should have correct initial state', async function () {
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
 
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)
   })
 
   it('should buyBearBucks', async function () {
-    var wei_sent = feedingCost * bearBucksPrice
+    let wei_sent = feedingCost * bearBucksPrice
 
-    var res = await crowdsale.buyBearBucks(
+    let res = await crowdsale.buyBearBucks(
       accounts[0], {from: accounts[0], value: wei_sent}
     )
-    var gas_used = new BigNumber(res.receipt.gasUsed)
+    let gas_used = new BigNumber(res.receipt.gasUsed)
 
-    var delta_account = getExpectedBalanceDelta(gas_used, wei_sent)
-    var delta_wallet = wei_sent
+    let delta_account = getExpectedBalanceDelta(gas_used, wei_sent)
+    let delta_wallet = wei_sent
 
-    var account_balance = old_account_balance.minus(delta_account).toNumber()
-    var wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
+    let account_balance = old_account_balance.minus(delta_account).toNumber()
+    let wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'totalSupply', 'expect': feedingCost},
       {'var': 'balanceOf.a0', 'expect': feedingCost}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'weiRaised', 'expect': wei_sent},
       {'var': 'wei_balance.a0', 'expect': account_balance},
       {'var': 'wei_balance.a6', 'expect': wallet_balance},
@@ -81,33 +81,33 @@ contract('CrowdsalePositiveTests', async function (accounts) {
   })
 
   it('should buyCryptoBear', async function () {
-    var wei_sent = cryptoBearsPrice
+    let wei_sent = cryptoBearsPrice
 
-    var res = await crowdsale.buyCryptoBear(
+    let res = await crowdsale.buyCryptoBear(
       genes,
       accounts[0],
       name,
       {from: accounts[0], value: wei_sent}
     )
-    var gas_used = new BigNumber(res.receipt.gasUsed)
+    let gas_used = new BigNumber(res.receipt.gasUsed)
 
-    var delta_account = getExpectedBalanceDelta(gas_used, wei_sent)
-    var delta_wallet = wei_sent
+    let delta_account = getExpectedBalanceDelta(gas_used, wei_sent)
+    let delta_wallet = wei_sent
 
-    var account_balance = old_account_balance.minus(delta_account).toNumber()
-    var wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
+    let account_balance = old_account_balance.minus(delta_account).toNumber()
+    let wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'weiRaised', 'expect': wei_sent},
       {'var': 'wei_balance.a0', 'expect': account_balance},
       {'var': 'wei_balance.a6', 'expect': wallet_balance},
@@ -116,30 +116,30 @@ contract('CrowdsalePositiveTests', async function (accounts) {
   })
 
   it('should return unspent wei for buyBearBucks', async function () {
-    var wei_used = feedingCost * bearBucksPrice
-    var wei_returned = bearBucksPrice/2
-    var wei_sent = wei_used + wei_returned
+    let wei_used = feedingCost * bearBucksPrice
+    let wei_returned = bearBucksPrice/2
+    let wei_sent = wei_used + wei_returned
 
-    var res = await crowdsale.buyBearBucks(
+    let res = await crowdsale.buyBearBucks(
       accounts[0], {from: accounts[0], value: wei_sent}
     )
-    var gas_used = new BigNumber(res.receipt.gasUsed)
+    let gas_used = new BigNumber(res.receipt.gasUsed)
 
-    var delta_account = getExpectedBalanceDelta(gas_used, wei_used)
-    var delta_wallet = wei_used
+    let delta_account = getExpectedBalanceDelta(gas_used, wei_used)
+    let delta_wallet = wei_used
 
-    var account_balance = old_account_balance.minus(delta_account).toNumber()
-    var wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
+    let account_balance = old_account_balance.minus(delta_account).toNumber()
+    let wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'totalSupply', 'expect': feedingCost},
       {'var': 'balanceOf.a0', 'expect': feedingCost}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'weiRaised', 'expect': wei_used},
       {'var': 'wei_balance.a0', 'expect': account_balance},
       {'var': 'wei_balance.a6', 'expect': wallet_balance},
@@ -149,35 +149,35 @@ contract('CrowdsalePositiveTests', async function (accounts) {
   })
 
   it('should return unspent wei for buyCryptoBear', async function () {
-    var wei_used = cryptoBearsPrice
-    var wei_returned = cryptoBearsPrice/2
-    var wei_sent = wei_used + wei_returned
+    let wei_used = cryptoBearsPrice
+    let wei_returned = cryptoBearsPrice/2
+    let wei_sent = wei_used + wei_returned
 
-    var res = await crowdsale.buyCryptoBear(
+    let res = await crowdsale.buyCryptoBear(
       genes,
       accounts[0],
       name,
       {from: accounts[0], value: wei_sent}
     )
-    var gas_used = new BigNumber(res.receipt.gasUsed)
+    let gas_used = new BigNumber(res.receipt.gasUsed)
 
-    var delta_account = getExpectedBalanceDelta(gas_used, wei_used)
-    var delta_wallet = wei_used
+    let delta_account = getExpectedBalanceDelta(gas_used, wei_used)
+    let delta_wallet = wei_used
 
-    var account_balance = old_account_balance.minus(delta_account).toNumber()
-    var wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
+    let account_balance = old_account_balance.minus(delta_account).toNumber()
+    let wallet_balance = old_wallet_balance.plus(new BigNumber(delta_wallet)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'balanceOf.a0', 'expect': 1},
       {'var': 'ownerOf.b0', 'expect': accounts[0]}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address},
       {'var': 'totalSupply', 'expect': startBalance},
       {'var': 'balanceOf.a0', 'expect': startBalance}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'weiRaised', 'expect': wei_used},
       {'var': 'wei_balance.a0', 'expect': account_balance},
       {'var': 'wei_balance.a6', 'expect': wallet_balance},

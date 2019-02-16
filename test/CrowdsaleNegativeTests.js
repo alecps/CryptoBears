@@ -10,7 +10,8 @@ const checkState = utils.checkState
 const expectRevert = utils.expectRevert
 const updateBalances = utils.updateBalances
 const getGasUsed = utils.getGasUsed
-const zero = utils.zero
+const zero40 = utils.zero40
+const zero64 = utils.zero64
 const getExpectedBalanceDelta = utils.getExpectedBalanceDelta
 
 const startBalance = 100
@@ -25,7 +26,7 @@ const bearBucksPrice = Number(web3.toWei(.002, 'ether'))
 contract('CrowdsaleNegativeTests', async function (accounts) {
 
   beforeEach('Make fresh contract', async function () {
-    cryptoBears = await CryptoBears.new( // We let accounts[5] represent the referee.
+    cryptoBears = await CryptoBears.new(
       startBalance, feedingCost, feedingInterval/1000, accounts[5])
     bearBucks = BearBucks.at(await cryptoBears._BearBucksContract.call())
     crowdsale = await BearCrowdsale.new(
@@ -41,42 +42,42 @@ contract('CrowdsaleNegativeTests', async function (accounts) {
   })
 
   it('should have correct initial state', async function () {
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
 
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)
   })
 
   it('should fail to buyBearBucks with insufficient funds', async function () {
-    var wei_sent = bearBucksPrice - 1
+    let wei_sent = bearBucksPrice - 1
 
     await expectRevert(
       crowdsale.buyBearBucks(accounts[0], {from: accounts[0], value: wei_sent}))
 
-    var gas_used = await getGasUsed()
-    var account_balance = old_account_balance.minus(
+    let gas_used = await getGasUsed()
+    let account_balance = old_account_balance.minus(
       new BigNumber(gas_used)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'wei_balance.a0', 'expect': account_balance},
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)
   })
 
   it('should fail to buyCryptoBear with insufficient funds', async function () {
-    var wei_sent = cryptoBearsPrice * .9
+    let wei_sent = cryptoBearsPrice * .9
 
     await expectRevert(crowdsale.buyCryptoBear(
       genes,
@@ -85,65 +86,65 @@ contract('CrowdsaleNegativeTests', async function (accounts) {
       {from: accounts[0], value: wei_sent}
     ))
 
-    var gas_used = await getGasUsed()
-    var account_balance = old_account_balance.minus(
+    let gas_used = await getGasUsed()
+    let account_balance = old_account_balance.minus(
       new BigNumber(gas_used)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'wei_balance.a0', 'expect': account_balance},
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)
   })
 
   it('should fail to buyBearBucks when beneficiary is address(0)', async function () {
-    var wei_sent = bearBucksPrice
+    let wei_sent = bearBucksPrice
 
     await expectRevert(
-      crowdsale.buyBearBucks(zero, {from: accounts[0], value: wei_sent}))
+      crowdsale.buyBearBucks(zero40, {from: accounts[0], value: wei_sent}))
 
-    var gas_used = await getGasUsed()
-    var account_balance = old_account_balance.minus(
+    let gas_used = await getGasUsed()
+    let account_balance = old_account_balance.minus(
       new BigNumber(gas_used)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'wei_balance.a0', 'expect': account_balance},
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)
   })
 
   it('should fail to buyCryptoBear when beneficiary is address(0)', async function () {
-    var wei_sent = cryptoBearsPrice
+    let wei_sent = cryptoBearsPrice
 
     await expectRevert(crowdsale.buyCryptoBear(
       genes,
-      zero,
+      zero40,
       name,
       {from: accounts[0], value: wei_sent}
     ))
 
-    var gas_used = await getGasUsed()
-    var account_balance = old_account_balance.minus(
+    let gas_used = await getGasUsed()
+    let account_balance = old_account_balance.minus(
       new BigNumber(gas_used)).toNumber()
 
-    var cryptoBearsStateChanges = [
+    let cryptoBearsStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var bearBucksStateChanges = [
+    let bearBucksStateChanges = [
       {'var': 'minter', 'expect': crowdsale.address}
     ]
-    var crowdsaleStateChanges = [
+    let crowdsaleStateChanges = [
       {'var': 'wei_balance.a0', 'expect': account_balance},
     ]
     await checkState([cryptoBears, bearBucks, crowdsale], [cryptoBearsStateChanges, bearBucksStateChanges, crowdsaleStateChanges], accounts)

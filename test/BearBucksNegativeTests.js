@@ -28,7 +28,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.mint(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.burn(accounts[0], amount, {from: accounts[2]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
     ]
@@ -40,7 +40,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.approve(accounts[5], amount, {from: accounts[0]})
     await expectRevert(bearBucks.placeBet(accounts[0], amount, {from: accounts[3]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount}
@@ -53,7 +53,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.approve(accounts[5], amount+1, {from: accounts[0]})
     await expectRevert(bearBucks.placeBet(accounts[0], amount+1, {from: accounts[5]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount+1}
@@ -66,7 +66,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.approve(accounts[5], amount-1, {from: accounts[0]})
     await expectRevert(bearBucks.placeBet(accounts[0], amount, {from: accounts[5]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount-1}
@@ -80,7 +80,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.placeBet(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.placeBet(accounts[0], 1, {from: accounts[5]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount+1},
@@ -95,7 +95,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.placeBet(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.removeBet(accounts[0], amount, {from: accounts[3]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount},
@@ -110,7 +110,7 @@ contract('BearBucksNegativeTests', async function (accounts) {
     await bearBucks.placeBet(accounts[0], amount, {from: accounts[5]})
     await expectRevert(bearBucks.approve(accounts[5], amount-1, {from: accounts[0]}))
 
-    var stateChanges = [
+    let stateChanges = [
       {'var': 'totalSupply', 'expect': amount},
       {'var': 'balanceOf.a0', 'expect': amount},
       {'var': 'allowance.a0.cb', 'expect': amount},
