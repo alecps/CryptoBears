@@ -20,12 +20,12 @@
   },
   "homepage": "https://github.com/AlecSchaefer/DAppProject1#readme",
   "dependencies": {
-    "assert-diff": "^2.0.3",
-    "bignumber.js": "^8.0.1",
-    "ganache-cli": "^6.2.5",
-    "lodash": "^4.17.11",
-    "openzeppelin-solidity": "^2.0.0",
+    "assert-diff": "2.0.3",
+    "bignumber.js": "8.0.1",
+    "ganache-cli": "6.2.5",
+    "lodash": "4.17.11",
+    "openzeppelin-solidity": "2.0.0",
     "truffle": "4.1.14",
-    "web3-utils": "^1.0.0-beta.46"
+    "web3-utils": "1.0.0-beta.46"
   }
 }
