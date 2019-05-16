@@ -10,7 +10,7 @@ import "../Support/SafeMath.sol";
 * _transferFrom and _mint, have been left for you to fill in. As with the ERC20
 * contract, you may copy the solutions verbatim from the OpenZeppelin-Solidity
 * repository, but we recommend that you try it yourself first.
-* https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC721/ERC721.sol
+* https://github.com/OpenZeppelin/openzeppelin-solidity/blob/5caecf548c04c97955b8f0487ceb804fab0e2ca1/contracts/token/ERC721/ERC721.sol
 */
 contract ERC721 is IERC721 {
   using SafeMath for uint256;

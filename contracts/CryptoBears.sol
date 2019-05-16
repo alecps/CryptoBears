@@ -168,7 +168,7 @@ contract CryptoBears is ERC721 {
   function getMealsNeeded(uint256 bearID)
     public exists(bearID) view returns(uint256)
   {
-    /* TODO: Explain why we use the memory keyword here. */
+    /* TODO: Explain why we use the storage keyword here. */
     Bear storage bear = _bears[bearID];
     uint256 timeSinceLastFed = now.sub(bear.timeLastFed);
     return timeSinceLastFed.div(_feedingInterval);

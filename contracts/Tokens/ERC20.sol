@@ -13,7 +13,7 @@ import "../Support/SafeMath.sol";
 * aid in your understanding of the code and make the rest of the assignment
 * easier. The ERC20 standard is incredibly important in the world of smart
 * contract developement, and it is useful to know the code well.
-* https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/token/ERC20/ERC20.sol
+* https://github.com/OpenZeppelin/openzeppelin-solidity/blob/6407d7818d3d101ca834b126dbd8f902e5b06c8a/contracts/token/ERC20/ERC20.sol
 */
 contract ERC20 is IERC20 {
  /*
@@ -135,7 +135,7 @@ contract ERC20 is IERC20 {
   function _mint(address account, uint256 value) internal {
 
     /*TODO*/
-    
+
   }
 
   /**
